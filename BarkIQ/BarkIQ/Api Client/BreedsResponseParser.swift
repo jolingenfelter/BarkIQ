@@ -20,8 +20,6 @@ struct BreedsResponseParser {
                 breeds.append(breed)
             }
         }
-        
-        print(breeds)
     
         return breeds
     }
