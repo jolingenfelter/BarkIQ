@@ -9,15 +9,17 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @State private var result: String = ""
     var body: some View {
-        Text("Hello world!")
+        Text(result)
             .task {
                 let apiClient = DogAPIClient()
                 
                 do {
-                    let _ = try await apiClient.fetchBreeds()
+                    let breeds = try await apiClient.fetchBreeds()
+                    result = breeds.map(\.displayName).joined(separator: ", ")
                 } catch {
-                    print(error)
+                    result = "Error: \(error.localizedDescription)"
                 }
             }
     }
