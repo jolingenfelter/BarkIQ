@@ -11,6 +11,15 @@ import SwiftData
 struct ContentView: View {
     var body: some View {
         Text("Hello world!")
+            .task {
+                let apiClient = DogAPIClient()
+                
+                do {
+                    let _ = try await apiClient.fetchBreeds()
+                } catch {
+                    print(error)
+                }
+            }
     }
 }
 
