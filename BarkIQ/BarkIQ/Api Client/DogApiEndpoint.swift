@@ -9,7 +9,7 @@ import Foundation
 
 enum DogApiEndpoint {
     case breeds
-    case randomImage(_ breed: String)
+    case randomImage(_ breed: Breed)
     
     private var baseURL: String {
         "https://dog.ceo/api"
@@ -20,7 +20,11 @@ enum DogApiEndpoint {
         case .breeds:
             return "/breeds/list/all"
         case .randomImage(let breed):
-            return "/breed/\(breed)/images/random"
+            if let subType = breed.subType {
+                return "/breed/\(breed.name)/\(subType)/images/random"
+            }
+            
+            return "/breed/\(breed.name)/images/random"
         }
     }
     
