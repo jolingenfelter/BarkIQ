@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
+    @State private var isShowingSetupSheet = false
+    
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
@@ -19,7 +21,7 @@ struct HomeView: View {
                     
                     VStack(spacing: 16) {
                         Button("Start quiz") {
-                            
+                            isShowingSetupSheet = true
                         }
                         .buttonStyle(.primary)
                         
@@ -35,10 +37,12 @@ struct HomeView: View {
                     minHeight: geometry.size.height,
                     alignment: .center
                 )
-                
             }
         }
         .background(.barkBackground)
+        .sheet(isPresented: $isShowingSetupSheet) {
+            QuizSettingsView()
+        }
     }
 }
 
