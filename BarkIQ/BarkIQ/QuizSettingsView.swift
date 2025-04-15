@@ -7,7 +7,12 @@
 
 import SwiftUI
 
+// Add QuizFlowView
 struct QuizSettingsView: View {
+    @Environment(\.dismiss)
+    private var dismiss
+    
+    @State private var isShowingQuestion: Bool = false
     @State private var questionCount: Int = 5
     
     private let countOptions = Array(stride(from: 5, through: 25, by: 5))
@@ -25,7 +30,7 @@ struct QuizSettingsView: View {
                     .pickerStyle(.menu)
                 } footer: {
                     Button("Start Quiz") {
-                        
+                        isShowingQuestion = true
                     }
                     .buttonStyle(.primary)
                     .padding(.top, 28)
@@ -33,6 +38,14 @@ struct QuizSettingsView: View {
                 
             }
             .navigationTitle(Text("Quiz Settings"))
+            .navigationDestination(isPresented: $isShowingQuestion) {
+                QuizQuestionView(
+                    question: .mock(),
+                    handleQuitAction: {
+                        dismiss()
+                    }
+                )
+            }
         }
     }
 }

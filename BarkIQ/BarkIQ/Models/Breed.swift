@@ -5,7 +5,7 @@
 //  Created by Jo Lingenfelter on 4/13/25.
 //
 
-struct Breed: CustomStringConvertible {
+struct Breed: Equatable, Hashable, CustomStringConvertible {
     let name: String
     let subType: String?
     
