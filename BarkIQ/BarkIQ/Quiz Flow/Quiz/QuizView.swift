@@ -14,6 +14,9 @@ struct QuizView: View {
     @State
     private var quizController: QuizController
     
+    @State
+    private var confirmationAlert: ConfirmationDialogModel?
+    
     let showResults: () -> Void
     let quitAction: () -> Void
     
@@ -32,8 +35,9 @@ struct QuizView: View {
             ScrollView {
                 VStack(spacing: questionTextSpacing) {
                     BarkImageView(url: quizController.currentQuestion.imageUrl)
-                        .frame(maxWidth: geometry.size.width - geometry.safeAreaInsets.leading - geometry.safeAreaInsets.trailing, maxHeight: geometry.size.height * 0.4)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .frame(maxWidth: geometry.size.width - geometry.safeAreaInsets.leading - geometry.safeAreaInsets.trailing, maxHeight: geometry.size.height * 0.4
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                     
                     Text(quizController.currentQuestion.questionText)
                         .font(.system(.body, design: .monospaced).bold())
@@ -44,7 +48,6 @@ struct QuizView: View {
                                 
                             }
                             .buttonStyle(.secondary)
-                            
                         }
                     }
                     
@@ -52,7 +55,7 @@ struct QuizView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Quit") {
-                            quitAction()
+                            confirmationAlert = quitConfirmation()
                         }
                     }
                 }
@@ -61,9 +64,16 @@ struct QuizView: View {
                 .navigationBarBackButtonHidden()
                 .interactiveDismissDisabled()
                 .navigationTitle("1/5")
+                .confirmationDialog($confirmationAlert)
             }
         }
         .background(Color.barkBackground)
+    }
+    
+    private func quitConfirmation() -> ConfirmationDialogModel {
+        let action = ConfirmationDialogModel.Action("Quit now", role: .destructive, action: quitAction)
+        let model = ConfirmationDialogModel(title: "Are you sure you want to quit?", message: "Your results will not be saved.", actions: [action])
+        return model
     }
 }
 

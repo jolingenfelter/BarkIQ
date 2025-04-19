@@ -18,6 +18,9 @@ struct BarkImageView: View {
     @State
     private var phase: Phase = .loading
     
+    @ScaledMetric(relativeTo: .largeTitle)
+    private var retrySpacing: CGFloat = 8
+    
     let url: URL
     
     init(url: URL) {
@@ -34,21 +37,32 @@ struct BarkImageView: View {
                     .resizable()
                     .scaledToFill()
             case .error(let error):
-                Text(error)
+                VStack(spacing: retrySpacing) {
+                    Text(error)
+                    Button("Retry", systemImage: "arrow.clockwise") {
+                        Task {
+                            await fetchImage()
+                        }
+                    }
+                }
             }
         }
         .task {
-            do {
-                let data = try await fetchImageData(from: url)
-                
-                if let image = Image(data: data) {
-                    phase = .loaded(image)
-                } else {
-                    phase = .error("Error converting data to image")
-                }
-            } catch {
-                phase = .error(error.localizedDescription)
+            await fetchImage()
+        }
+    }
+    
+    private func fetchImage() async {
+        do {
+            let data = try await fetchImageData(from: url)
+            
+            if let image = Image(data: data) {
+                phase = .loaded(image)
+            } else {
+                phase = .error("Error converting data to image")
             }
+        } catch {
+            phase = .error(error.localizedDescription)
         }
     }
     
