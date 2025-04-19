@@ -29,14 +29,12 @@ struct QuizSetupView: View {
                 }
                 .pickerStyle(.menu)
             } footer: {
-                Button("Start Quiz!") {
-                    Task {
-                        do {
-                            settings.breeds = try await apiClient.fetchBreeds()
-                            startQuizAction(settings)
-                        } catch {
-                            self.error = errorAlert(error)
-                        }
+                LoadingButton("Start Quiz!") {
+                    do {
+                        settings.breeds = try await apiClient.fetchBreeds()
+                        startQuizAction(settings)
+                    } catch {
+                        self.error = errorAlert(error)
                     }
                 }
                 .buttonStyle(.primary)

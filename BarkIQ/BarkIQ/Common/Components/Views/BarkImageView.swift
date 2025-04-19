@@ -9,7 +9,7 @@ import SwiftUI
 
 // TODO: Add documentation for why AsyncImage will not work here
 struct BarkImageView: View {
-    enum Phase {
+    enum Phase: Equatable {
         case loading
         case loaded(Image)
         case error(String)
@@ -50,6 +50,7 @@ struct BarkImageView: View {
         .task {
             await fetchImage()
         }
+        .animation(.default, value: phase)
     }
     
     private func fetchImage() async {
