@@ -15,14 +15,9 @@ struct Question: Hashable, Equatable {
     let answer: Breed
     
     static func mock() -> Question {
-        let answer = Breed(name: "terrier", subType: "wheaten")
+        let answer: Breed = .mock1
         
-        let breeds = [
-            answer,
-            Breed(name: "dalmatian"),
-            Breed(name: "poodle"),
-            Breed(name: "bulldog")
-        ]
+        let breeds: [Breed] = [answer, .mock2, .mock3, .mock4]
         
         guard let url = Bundle.main.url(forResource: "jacopo", withExtension: "jpg"),
               let imageData = try? Data(contentsOf: url) else {
