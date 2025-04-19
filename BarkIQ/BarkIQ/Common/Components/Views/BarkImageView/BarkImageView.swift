@@ -8,41 +8,47 @@
 import SwiftUI
 
 // TODO: Add documentation for why AsyncImage will not work here
-struct BarkImageView: View {
+struct BarkImageView<Placeholder: View>: View {
     enum Phase: Equatable {
         case loading
         case loaded(Image)
         case error(String)
     }
     
+    @ScaledMetric
+    private var retrySpacing: CGFloat = 8
+    
     @State
     private var phase: Phase = .loading
     
-    @ScaledMetric(relativeTo: .largeTitle)
-    private var retrySpacing: CGFloat = 8
+    @Environment(\.imageDataLoader)
+    private var imageDataLoader: ImageDataLoader
     
     let url: URL
+    let placeholder: () -> Placeholder
     
-    init(url: URL) {
+    init(
+        url: URL,
+        @ViewBuilder placeholder: @escaping () -> Placeholder
+    ) {
         self.url = url
+        self.placeholder = placeholder
     }
     
     var body: some View {
         ZStack {
             switch phase {
             case .loading:
-                ProgressView()
+                placeholder()
             case .loaded(let image):
                 image
                     .resizable()
                     .scaledToFill()
             case .error(let error):
                 VStack(spacing: retrySpacing) {
-                    Text(error)
+                    Text("Error loading image: \(error)")
                     Button("Retry", systemImage: "arrow.clockwise") {
-                        Task {
-                            await fetchImage()
-                        }
+                        
                     }
                 }
             }
@@ -55,7 +61,7 @@ struct BarkImageView: View {
     
     private func fetchImage() async {
         do {
-            let data = try await fetchImageData(from: url)
+            let data = try await imageDataLoader.fetchImageData(url)
             
             if let image = Image(data: data) {
                 phase = .loaded(image)
@@ -66,20 +72,18 @@ struct BarkImageView: View {
             phase = .error(error.localizedDescription)
         }
     }
-    
-    private func fetchImageData(from url: URL) async throws -> Data {
-        var request = URLRequest(url: url)
-        request.timeoutInterval = 10.0
+}
 
-        // TODO: Add a comment to explain this
-        let session = URLSession(configuration: .ephemeral)
-        let (data, _) = try await session.data(for: request)
-        
-        return data
+extension BarkImageView where Placeholder == DefaultImagePlaceholder {
+    init(url: URL) {
+        self.init(
+            url: url,
+            placeholder: { DefaultImagePlaceholder() }
+        )
     }
-    
 }
 
 #Preview {
     BarkImageView(url: Bundle.main.url(forResource: "jacopo", withExtension: "jpg")!)
+        .environment(\.imageDataLoader, ImageDataLoader.mock)
 }

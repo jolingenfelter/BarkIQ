@@ -1,0 +1,38 @@
+//
+//  ImageDataLoader.swift
+//  BarkIQ
+//
+//  Created by Jo Lingenfelter on 4/19/25.
+//
+
+import SwiftUI
+
+struct ImageDataLoader {
+    let fetchImageData: (URL) async throws -> Data
+    
+    static let live = ImageDataLoader { url in
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 10.0
+        
+        // TODO: Add comment here
+        let session = URLSession(configuration: .ephemeral)
+        let (data, _) = try await session.data(for: request)
+        return data
+    }
+    
+    static let failing = ImageDataLoader { url in
+        throw URLError(.badServerResponse)
+    }
+    
+    static let mock = ImageDataLoader { url in
+        guard let mockURL = Bundle.main.url(forResource: "jacopo", withExtension: "jpg"),
+              let data = try? Data(contentsOf: mockURL)
+        else {
+            throw URLError(.fileDoesNotExist)
+        }
+        
+        try? await Task.sleep(for: .seconds(2.0))
+        
+        return data
+    }
+}

@@ -51,4 +51,5 @@ struct QuizFlow: View {
 
 #Preview {
     QuizFlow()
+        .environment(\.dogApiClient, .mock)
 }

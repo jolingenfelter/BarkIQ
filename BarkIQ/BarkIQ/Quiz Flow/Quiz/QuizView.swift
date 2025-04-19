@@ -35,9 +35,12 @@ struct QuizView: View {
             ScrollView {
                 VStack(spacing: questionTextSpacing) {
                     BarkImageView(url: quizController.currentQuestion.imageUrl)
-                    .frame(maxWidth: geometry.size.width - geometry.safeAreaInsets.leading - geometry.safeAreaInsets.trailing, maxHeight: geometry.size.height * 0.4
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .frame(
+                            maxWidth: geometry.size.width - geometry.safeAreaInsets.leading - geometry.safeAreaInsets.trailing,
+                            minHeight: geometry.size.height * 0.3,
+                            maxHeight: geometry.size.height * 0.4
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     
                     Text(quizController.currentQuestion.questionText)
                         .font(.system(.body, design: .monospaced).bold())
@@ -83,4 +86,5 @@ struct QuizView: View {
         showResults: {},
         quitAction: {}
     )
+    .environment(\.imageDataLoader, .mock)
 }
