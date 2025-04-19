@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Question: Equatable {
+struct Question: Hashable, Equatable {
     let id: UUID = UUID()
     let imageData: Data
     let questionText: String

@@ -8,13 +8,42 @@
 import SwiftUI
 
 struct QuizFlow: View {
+    private enum Stage: Hashable {
+        case quiz(QuizSettings)
+        case results
+    }
+    
     @Environment(\.dismiss)
     private var dismiss
     
+    @State
+    private var navigationPath: [Stage] = []
+
     var body: some View {
-        NavigationStack {
-            QuizSettingsView {
-                dismiss()
+        NavigationStack(path: $navigationPath) {
+            QuizSetupView(
+                startQuizAction: { settings in
+                    navigationPath.append(.quiz(settings))
+                },
+                dismissAction: {
+                    dismiss()
+                }
+            )
+            .navigationDestination(for: Stage.self) { stage in
+                switch stage {
+                case .quiz(let settings):
+                    QuizView(
+                        settings: settings,
+                        showResults: {
+                            navigationPath.append(.results)
+                        },
+                        quitAction: {
+                            dismiss()
+                        }
+                    )
+                case .results:
+                    ResultsView()
+                }
             }
         }
     }

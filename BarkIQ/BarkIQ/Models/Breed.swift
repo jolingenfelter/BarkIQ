@@ -34,4 +34,20 @@ struct Breed: Equatable, Hashable, CustomStringConvertible {
         }
         """
     }
+    
+    static let mock1 = Breed(
+        name: "shepherd",
+        subType: "australian"
+    )
+    
+    static let mock2 = Breed(
+        name: "hound",
+        subType: "english"
+    )
+    
+    static let mock3 = Breed(name: "pug")
+    
+    static let mock4 = Breed(name: "boxer")
+    
+    static let mockArray = [mock1, mock2, mock3, mock4]
 }

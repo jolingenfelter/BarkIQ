@@ -1,5 +1,5 @@
 //
-//  QuizQuestionView.swift
+//  QuizView.swift
 //  BarkIQ
 //
 //  Created by Jo Lingenfelter on 4/14/25.
@@ -7,22 +7,27 @@
 
 import SwiftUI
 
-struct QuizQuestionView: View {
-    
+struct QuizView: View {
     @ScaledMetric
     private var questionTextSpacing: CGFloat = 24
     
     @State
     private var decodedImage: Image?
     
-    let question: Question
+    @State
+    private var quizController: QuizController
     
-    let handleQuitAction: () -> Void
+    let showResults: () -> Void
+    let quitAction: () -> Void
     
-    init(question: Question, handleQuitAction: @escaping () -> Void) {
-        self.question = question
-        self.handleQuitAction = handleQuitAction
-        _decodedImage = State(initialValue: Image(data: question.imageData))
+    init(
+        settings: QuizSettings,
+        showResults: @escaping () -> Void,
+        quitAction: @escaping () -> Void
+    ) {
+        _quizController = State(wrappedValue: QuizController(settings: settings))
+        self.showResults = showResults
+        self.quitAction = quitAction
     }
     
     var body: some View {
@@ -35,14 +40,13 @@ struct QuizQuestionView: View {
                             .scaledToFill()
                             .frame(maxWidth: geometry.size.width - geometry.safeAreaInsets.leading - geometry.safeAreaInsets.trailing, maxHeight: geometry.size.height * 0.4)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
-                        
                     }
                     
-                    Text(question.questionText)
+                    Text(quizController.currentQuestion.questionText)
                         .font(.system(.body, design: .monospaced).bold())
                     
                     VStack(spacing: 16) {
-                        ForEach(question.choices, id: \.self) { breed in
+                        ForEach(quizController.currentQuestion.choices, id: \.self) { breed in
                             Button(breed.displayName) {
                     
                             }
@@ -55,24 +59,32 @@ struct QuizQuestionView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Quit") {
-                            handleQuitAction()
+                            quitAction()
                         }
                     }
+                }
+                .onAppear {
+                    setupQuestion()
                 }
                 .scenePadding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .navigationBarBackButtonHidden()
-                .interactiveDismissDisabled(true)
+                .interactiveDismissDisabled()
                 .navigationTitle("1/5")
             }
         }
         .background(Color.barkBackground)
     }
+    
+    private func setupQuestion() {
+        decodedImage = Image(data: quizController.currentQuestion.imageData)
+    }
 }
 
 #Preview {
-    QuizQuestionView(
-        question: .mock(),
-        handleQuitAction: {}
+    QuizView(
+        settings: .mock,
+        showResults: {},
+        quitAction: {}
     )
 }
