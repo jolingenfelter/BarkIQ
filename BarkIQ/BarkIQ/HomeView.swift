@@ -41,7 +41,7 @@ struct HomeView: View {
         }
         .background(.barkBackground)
         .sheet(isPresented: $isShowingSetupSheet) {
-            QuizSettingsView()
+            QuizFlow()
         }
     }
 }
