@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct QuizSetupView: View {
+    @Environment(\.dogApiClient)
+    private var apiClient
+    
     @State private var isShowingQuestion: Bool = false
     @State private var settings = QuizSettings()
     @State private var error: AlertModel?
@@ -29,7 +32,7 @@ struct QuizSetupView: View {
                 Button("Start Quiz!") {
                     Task {
                         do {
-                            settings.breeds = try await DogApiClient.fetchBreeds()
+                            settings.breeds = try await apiClient.fetchBreeds()
                             startQuizAction(settings)
                         } catch {
                             self.error = errorAlert(error)

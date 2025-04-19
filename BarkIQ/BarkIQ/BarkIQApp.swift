@@ -13,6 +13,7 @@ struct BarkIQApp: App {
     var body: some Scene {
         WindowGroup {
             HomeView()
+                .dogApiClient(.live)
         }
     }
 }

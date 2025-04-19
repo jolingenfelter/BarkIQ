@@ -20,7 +20,7 @@ struct HomeView: View {
                         .fontWeight(.semibold)
                     
                     VStack(spacing: 16) {
-                        Button("Start quiz") {
+                        Button("Quiz me!") {
                             isShowingSetupSheet = true
                         }
                         .buttonStyle(.primary)

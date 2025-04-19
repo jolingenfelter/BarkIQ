@@ -9,38 +9,69 @@ import Foundation
 import OSLog
 
 struct DogApiClient {
-    
-    enum DogApiClientError: Error {
+    enum Error: Swift.Error {
         case invalidURL
         case responseError(String)
+        case unknown(String)
     }
     
-    static func fetchImageData(for breed: Breed) async throws -> Data {
-        guard let imageURL = DogApiEndpoint.randomImage(breed).url else {
-            Logger.networking.error("❌ Failed to create url fetching image for \(breed.displayName)")
-            throw DogApiClientError.invalidURL
+    var fetchBreeds: () async throws -> [Breed]
+    var fetchImageUrl: (_ for: Breed) async throws -> URL
+    var fetchImageData: (URL) async throws -> Data
+    
+    static let live: DogApiClient = DogApiClient(
+        fetchBreeds: DogApiLive.fetchBreeds,
+        fetchImageUrl: DogApiLive.fetchImageUrl(for:),
+        fetchImageData: DogApiLive.fetchImageData(from:)
+    )
+    
+    static let mock: DogApiClient = DogApiClient(
+        fetchBreeds: {
+            Breed.mockArray
+        },
+        fetchImageUrl: { breed in
+            guard let url = Bundle.main.url(forResource: "jacopo", withExtension: "jpg"),
+                  let imageData = try? Data(contentsOf: url) else {
+                throw Error.invalidURL
+            }
+            
+            return url
+        }, fetchImageData: { url in
+            guard let url = Bundle.main.url(forResource: "jacopo", withExtension: "jpg"),
+                  let imageData = try? Data(contentsOf: url) else {
+                throw Error.unknown("Unable to load mock image data")
+            }
+            
+            return imageData
         }
-        
-        let resultUrl: URL = try await fetchData(from: imageURL)
-        Logger.networking.info("🐾 Image result url: \(resultUrl)")
-        
-        var request = URLRequest(url: resultUrl)
+    )
+}
+
+private enum DogApiLive {
+    // Move this to custom image view
+    static func fetchImageData(from url: URL) async throws -> Data {
+        var request = URLRequest(url: url)
         request.timeoutInterval = 10.0
 
-        // The API returns a JSON-wrapped image URL. Fetch the
-        // image data separately in another session.
-        Logger.networking.info("🐾 Starting request to url: \(resultUrl)")
         let session = URLSession(configuration: .ephemeral)
         let (data, _) = try await session.data(for: request)
-        Logger.networking.info("📦 Received image data from url: \(resultUrl)")
         
         return data
+    }
+    
+    static func fetchImageUrl(for breed: Breed) async throws -> URL {
+        guard let imageURL = DogApiEndpoint.randomImage(breed).url else {
+            Logger.networking.error("❌ Failed to create url fetching image for \(breed.displayName)")
+            throw DogApiClient.Error.invalidURL
+        }
+        
+        return try await fetchData(from: imageURL)
     }
     
     static func fetchBreeds() async throws -> [Breed] {
         guard let breedsURL = DogApiEndpoint.breeds.url else {
             Logger.networking.error("❌ Failed to create url fetching breeds list")
-            throw DogApiClientError.invalidURL
+            throw DogApiClient.Error.invalidURL
         }
         
         let breedsData: [String: [String]] = try await fetchData(from: breedsURL)
@@ -77,7 +108,7 @@ struct DogApiClient {
                 // The API has returned a response, but it had an `error` status
                 // or parsing failed
                 Logger.networking.error("❌ Received an error response from url: \(url):\n\(failure.description)")
-                throw DogApiClientError.responseError("The request failed: \(failure.message)")
+                throw DogApiClient.Error.responseError("The request failed: \(failure.message)")
             }
         } catch {
             Logger.networking.error("❌ Exception while fetching from url: \(url) with error: \(error.localizedDescription)")
