@@ -13,6 +13,9 @@ struct QuizFlow: View {
         case results
     }
     
+    @Environment(\.dogApiClient)
+    private var apiClient
+    
     @Environment(\.dismiss)
     private var dismiss
     
@@ -34,6 +37,7 @@ struct QuizFlow: View {
                 case .quiz(let settings):
                     QuizView(
                         settings: settings,
+                        apiClient: apiClient,
                         showResults: {
                             navigationPath.append(.results)
                         },

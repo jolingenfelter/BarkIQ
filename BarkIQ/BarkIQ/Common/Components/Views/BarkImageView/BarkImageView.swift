@@ -24,11 +24,11 @@ struct BarkImageView<Placeholder: View>: View {
     @Environment(\.imageDataLoader)
     private var imageDataLoader: ImageDataLoader
     
-    let url: URL
+    let url: URL?
     let placeholder: () -> Placeholder
     
     init(
-        url: URL,
+        url: URL?,
         @ViewBuilder placeholder: @escaping () -> Placeholder
     ) {
         self.url = url
@@ -56,10 +56,19 @@ struct BarkImageView<Placeholder: View>: View {
         .task {
             await fetchImage()
         }
+        .onChange(of: url) { _ , newValue in
+            Task {
+                await fetchImage()
+            }
+        }
         .animation(.default, value: phase)
     }
     
     private func fetchImage() async {
+        guard let url else {
+            return
+        }
+        
         do {
             let data = try await imageDataLoader.fetchImageData(url)
             
@@ -75,7 +84,7 @@ struct BarkImageView<Placeholder: View>: View {
 }
 
 extension BarkImageView where Placeholder == DefaultImagePlaceholder {
-    init(url: URL) {
+    init(url: URL?) {
         self.init(
             url: url,
             placeholder: { DefaultImagePlaceholder() }
