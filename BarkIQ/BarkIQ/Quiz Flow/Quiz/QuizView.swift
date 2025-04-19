@@ -12,9 +12,6 @@ struct QuizView: View {
     private var questionTextSpacing: CGFloat = 24
     
     @State
-    private var decodedImage: Image?
-    
-    @State
     private var quizController: QuizController
     
     let showResults: () -> Void
@@ -34,13 +31,9 @@ struct QuizView: View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: questionTextSpacing) {
-                    if let decodedImage {
-                        decodedImage
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: geometry.size.width - geometry.safeAreaInsets.leading - geometry.safeAreaInsets.trailing, maxHeight: geometry.size.height * 0.4)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
+                    BarkImageView(url: quizController.currentQuestion.imageUrl)
+                        .frame(maxWidth: geometry.size.width - geometry.safeAreaInsets.leading - geometry.safeAreaInsets.trailing, maxHeight: geometry.size.height * 0.4)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     
                     Text(quizController.currentQuestion.questionText)
                         .font(.system(.body, design: .monospaced).bold())
@@ -48,7 +41,7 @@ struct QuizView: View {
                     VStack(spacing: 16) {
                         ForEach(quizController.currentQuestion.choices, id: \.self) { breed in
                             Button(breed.displayName) {
-                    
+                                
                             }
                             .buttonStyle(.secondary)
                             
@@ -63,9 +56,6 @@ struct QuizView: View {
                         }
                     }
                 }
-                .onAppear {
-                    setupQuestion()
-                }
                 .scenePadding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .navigationBarBackButtonHidden()
@@ -74,10 +64,6 @@ struct QuizView: View {
             }
         }
         .background(Color.barkBackground)
-    }
-    
-    private func setupQuestion() {
-        decodedImage = Image(data: quizController.currentQuestion.imageData)
     }
 }
 

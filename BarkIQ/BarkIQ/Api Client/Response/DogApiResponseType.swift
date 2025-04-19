@@ -5,6 +5,7 @@
 //  Created by Jo Lingenfelter on 4/13/25.
 //
 
+// TODO: Add documentation to explain why this is necessary
 enum DogApiResponseType<T: Codable>: Codable {
     case success(DogApiResponse<T>)
     case error(DogApiResponse<String>)

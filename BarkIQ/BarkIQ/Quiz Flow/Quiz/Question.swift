@@ -9,7 +9,7 @@ import Foundation
 
 struct Question: Hashable, Equatable {
     let id: UUID = UUID()
-    let imageData: Data
+    let imageUrl: URL
     let questionText: String
     let choices: [Breed]
     let answer: Breed
@@ -19,13 +19,12 @@ struct Question: Hashable, Equatable {
         
         let breeds: [Breed] = [answer, .mock2, .mock3, .mock4]
         
-        guard let url = Bundle.main.url(forResource: "jacopo", withExtension: "jpg"),
-              let imageData = try? Data(contentsOf: url) else {
+        guard let url = Bundle.main.url(forResource: "jacopo", withExtension: "jpg") else {
             fatalError("Missing or invalid test image")
         }
         
         return Question(
-            imageData: imageData,
+            imageUrl: url,
             questionText: "What breed is this dog?",
             choices: breeds.shuffled(),
             answer: answer

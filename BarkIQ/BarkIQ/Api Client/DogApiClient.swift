@@ -17,12 +17,10 @@ struct DogApiClient {
     
     var fetchBreeds: () async throws -> [Breed]
     var fetchImageUrl: (_ for: Breed) async throws -> URL
-    var fetchImageData: (URL) async throws -> Data
     
     static let live: DogApiClient = DogApiClient(
         fetchBreeds: DogApiLive.fetchBreeds,
-        fetchImageUrl: DogApiLive.fetchImageUrl(for:),
-        fetchImageData: DogApiLive.fetchImageData(from:)
+        fetchImageUrl: DogApiLive.fetchImageUrl,
     )
     
     static let mock: DogApiClient = DogApiClient(
@@ -30,34 +28,16 @@ struct DogApiClient {
             Breed.mockArray
         },
         fetchImageUrl: { breed in
-            guard let url = Bundle.main.url(forResource: "jacopo", withExtension: "jpg"),
-                  let imageData = try? Data(contentsOf: url) else {
+            guard let url = Bundle.main.url(forResource: "jacopo", withExtension: "jpg") else {
                 throw Error.invalidURL
             }
             
             return url
-        }, fetchImageData: { url in
-            guard let url = Bundle.main.url(forResource: "jacopo", withExtension: "jpg"),
-                  let imageData = try? Data(contentsOf: url) else {
-                throw Error.unknown("Unable to load mock image data")
-            }
-            
-            return imageData
         }
     )
 }
 
 private enum DogApiLive {
-    // Move this to custom image view
-    static func fetchImageData(from url: URL) async throws -> Data {
-        var request = URLRequest(url: url)
-        request.timeoutInterval = 10.0
-
-        let session = URLSession(configuration: .ephemeral)
-        let (data, _) = try await session.data(for: request)
-        
-        return data
-    }
     
     static func fetchImageUrl(for breed: Breed) async throws -> URL {
         guard let imageURL = DogApiEndpoint.randomImage(breed).url else {
