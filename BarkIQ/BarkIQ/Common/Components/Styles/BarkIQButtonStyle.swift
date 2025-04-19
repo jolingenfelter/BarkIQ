@@ -16,19 +16,30 @@ struct BarkIQButtonStyle: ButtonStyle {
     @Environment(\.colorScheme)
     private var colorScheme
     
+    @Environment(\.isEnabled)
+    private var isEnabled
+    
     private var foregroundColor: Color {
         colorScheme == .dark ? .black : .white
     }
-
+    
+    private var backgroundColor: Color {
+        isEnabled ? color : Color(white: 0.85)
+    }
+    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(.body).bold())
             .padding(.vertical, verticalPadding)
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity)
-            .foregroundColor(foregroundColor)
-            .background(configuration.isPressed ? color.opacity(0.8) : color, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-            
+            .foregroundColor(isEnabled ? foregroundColor : .gray)
+            .background {
+                backgroundColor
+                    .saturation(configuration.isPressed && isEnabled ? 0.85 : 1.0)
+                    .brightness(configuration.isPressed && isEnabled ? -0.05 : 0)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
     }
 }
 
@@ -40,11 +51,16 @@ extension ButtonStyle where Self == BarkIQButtonStyle {
 
 #Preview {
     VStack {
-        Button("Primary Button!") {}
+        Button("Primary Button") {}
             .buttonStyle(.primary)
             .scenePadding()
         
-        Button("Secondary Button!") {}
+        Button("Disabled Button") {}
+            .buttonStyle(.primary)
+            .scenePadding()
+            .disabled(true)
+        
+        Button("Secondary Button") {}
             .buttonStyle(.secondary)
             .scenePadding()
     }

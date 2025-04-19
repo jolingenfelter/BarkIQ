@@ -10,9 +10,9 @@ import SwiftUI
 struct LoadingButton<Label: View>: View {
     let action: () async -> Void
     let label: () -> Label
-
+    
     @State private var isLoading = false
-
+    
     init(
         action: @escaping () async -> Void,
         @ViewBuilder label: @escaping () -> Label
@@ -20,12 +20,10 @@ struct LoadingButton<Label: View>: View {
         self.action = action
         self.label = label
     }
-
+    
     var body: some View {
         Button {
-            withAnimation {
-                isLoading = true
-            }
+            isLoading = true
             
             Task {
                 await action()
@@ -41,6 +39,7 @@ struct LoadingButton<Label: View>: View {
             }
         }
         .disabled(isLoading)
+        .animation(.default, value: isLoading)
     }
 }
 
@@ -53,9 +52,18 @@ extension LoadingButton where Label == Text {
 
 private struct LoadingButtonPreview: View {
     var body: some View {
-        LoadingButton("Press me!") {
-            try? await Task.sleep(for: .seconds(2))
+        VStack {
+            LoadingButton("Primary Button") {
+                try? await Task.sleep(for: .seconds(2))
+            }
+            .buttonStyle(.primary)
+            
+            LoadingButton("Secondary Button") {
+                try? await Task.sleep(for: .seconds(2))
+            }
+            .buttonStyle(.secondary)
         }
+        .scenePadding()
     }
 }
 
