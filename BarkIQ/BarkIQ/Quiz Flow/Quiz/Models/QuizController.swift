@@ -20,7 +20,7 @@ final class QuizController {
         case loading
     }
 
-    private var currentQuestionNumber: Int = 0
+    private var currentQuestionNumber: Int = 1
     
     private(set) var currentState: QuizState = .loading
     
@@ -40,12 +40,12 @@ final class QuizController {
     }
     
     func reset() {
-        self.currentQuestionNumber = 0
+        self.currentQuestionNumber = 1
         self.results.removeAll()
     }
     
     func next() async {
-       guard currentQuestionNumber < settings.questionCount else {
+       guard currentQuestionNumber <= settings.questionCount else {
            self.currentState = .results(results)
            self.currentQuestionNumber = 0
            return
@@ -56,10 +56,13 @@ final class QuizController {
         do {
             try await fetchBreedsIfNeeded()
             
-            currentQuestionNumber += 1
             let question = try await generateQuestion(title: "\(currentQuestionNumber)/\(settings.questionCount)")
             
             self.currentState = .question(question)
+            
+            // Only increment the question number after a succesful
+            // fetch has been made
+            currentQuestionNumber += 1
         } catch {
             self.currentState = .error(error.localizedDescription)
         }

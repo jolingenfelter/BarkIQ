@@ -11,6 +11,9 @@ struct ResultsView: View {
     @Environment(\.quizActions.restart)
     private var restart
     
+    @Environment(\.quizActions.quit)
+    private var quit
+    
     let results: [QuestionResult]
     
     init(results: [QuestionResult]) {
@@ -48,6 +51,13 @@ struct ResultsView: View {
                 }
                 .buttonStyle(.primary)
                 .padding(.top, 28)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Done") {
+                    quit()
+                }
             }
         }
         .navigationTitle("Score")

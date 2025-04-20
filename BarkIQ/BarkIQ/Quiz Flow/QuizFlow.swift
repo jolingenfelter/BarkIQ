@@ -33,6 +33,16 @@ struct QuizFlow: View {
         return false
     }
     
+    private var isCurrentlyError: Bool {
+        if let top = navigationPath.last {
+            if case .error = top {
+                return true
+            }
+        }
+       
+        return false
+    }
+    
     init(apiClient: DogApiClient) {
         _quizController = State(wrappedValue: QuizController(apiClient: apiClient))
     }
@@ -62,6 +72,10 @@ struct QuizFlow: View {
                 .onChange(of: quizController.currentState) { oldValue, newValue in
                     switch newValue {
                     case .error(let error):
+                        guard !isCurrentlyError else {
+                            return
+                        }
+                        
                         navigationPath.append(.error(error))
                     case .question(let question):
                         navigationPath.append(.quiz(question))

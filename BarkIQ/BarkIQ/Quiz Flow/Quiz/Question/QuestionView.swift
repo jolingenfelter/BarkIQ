@@ -38,6 +38,15 @@ struct QuestionView: View {
         return true
     }
     
+    private var titleText: String {
+        switch mode {
+        case .review:
+            "#\(question.location.questionNumber)"
+        case .play:
+            question.location.displayText
+        }
+    }
+    
     private var backgroundColor: Color {
         switch questionStage {
         case .showAnswer(let result):
@@ -106,7 +115,7 @@ struct QuestionView: View {
         }
         .background(backgroundColor)
         .navigationBarBackButtonHidden(mode == .play)
-        .navigationTitle(question.location.displayText)
+        .navigationTitle(titleText)
         .navigationBarTitleDisplayMode(.large)
         .confirmationDialog($confirmationAlert)
     }
