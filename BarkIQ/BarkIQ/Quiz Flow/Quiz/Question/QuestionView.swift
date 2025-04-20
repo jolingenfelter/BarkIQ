@@ -55,16 +55,12 @@ struct QuestionView: View {
                     .font(.system(.body, design: .monospaced).bold())
                 
                 VStack(spacing: 48) {
-                    VStack(spacing: 16) {
-                        ForEach(question.choices) { breed in
-                            Button(breed.displayName) {
-                                let isCorrect = breed == question.answer
-                                questionStage = .showAnswer(isCorrect)
-                            }
-                            .buttonStyle(.secondary)
-                            .disabled(isShowingAnswer)
-                        }
-                    }
+                    AnswerPicker(
+                        choices: question.choices,
+                        correctAnswer: question.answer,
+                        questionStage: $questionStage,
+                        selectChoiceAction: answerAction
+                    )
                     
                     // Some sort of "continue" action
                     // to handle ending a quiz
@@ -73,12 +69,12 @@ struct QuestionView: View {
                             await nextAction()
                         }
                         .buttonStyle(.primary)
+                        .transition(.slide)
                     }
                 }
             }
             .scenePadding()
-            .animation(.default, value: isShowingAnswer)
-            .animation(.default, value: question)
+            .animation(.spring, value: isShowingAnswer)
         }
         .background(backgroundColor)
         .navigationBarBackButtonHidden()
@@ -107,9 +103,7 @@ struct QuestionView: View {
 #Preview {
     QuestionView(
         question: .mock(),
-        answerAction: { _ in
-            return Bool.random()
-        },
+        answerAction: { _ in },
         nextAction: {},
         quitAction: {}
     )

@@ -9,23 +9,13 @@ import SwiftUI
 
 struct BarkIQButtonStyle: ButtonStyle {
     let color: Color
+    let highlight: HighlightBehavior
     
     @ScaledMetric(relativeTo: .largeTitle)
     private var verticalPadding: CGFloat = 16
     
-    @Environment(\.colorScheme)
-    private var colorScheme
-    
-    @Environment(\.isEnabled)
-    private var isEnabled
-    
-    private var foregroundColor: Color {
-        colorScheme == .dark ? .black : .white
-    }
-    
-    private var backgroundColor: Color {
-        isEnabled ? color : Color(white: 0.85)
-    }
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.isEnabled) private var isEnabled
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -33,20 +23,84 @@ struct BarkIQButtonStyle: ButtonStyle {
             .padding(.vertical, verticalPadding)
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity)
-            .foregroundColor(isEnabled ? foregroundColor : .gray)
-            .background {
-                backgroundColor
-                    .saturation(configuration.isPressed && isEnabled ? 0.85 : 1.0)
-                    .brightness(configuration.isPressed && isEnabled ? -0.05 : 0)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            .foregroundColor(resolveForegroundColor())
+            .background(resolveBackground(configuration: configuration))
+    }
+    
+    // MARK: - Colors
+
+    private func resolveForegroundColor() -> Color {
+        if !isEnabled {
+            return Color(white: 0.2)
+        }
+        
+        switch highlight {
+        case .hilightable:
+            return .barkText
+        case .none:
+            return colorScheme == .dark ? .black : .white
+        }
+    }
+    
+    @ViewBuilder
+    private func resolveBackground(configuration: Configuration) -> some View {
+        let noHighlight = highlight == .none
+        let shouldApplyEffect = noHighlight && isEnabled && configuration.isPressed
+        backgroundFill
+            .modifier(PressedEffect(applyEffect: shouldApplyEffect))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+    
+    private var backgroundFill: Color {
+        switch highlight {
+        case .none:
+            return isEnabled ? color : Color(white: 0.85)
+        case .hilightable(let type):
+            switch type {
+            case .positive:
+                return Color.green.opacity(0.4)
+            case .negative:
+                return Color.red.opacity(0.4)
             }
+        }
+    }
+}
+
+// MARK: - Pressed Animation Modifier
+
+private struct PressedEffect: ViewModifier {
+    let applyEffect: Bool
+    
+    func body(content: Content) -> some View {
+        content
+            .saturation(applyEffect ? 0.85 : 1.0)
+            .brightness(applyEffect ? -0.05 : 0)
     }
 }
 
 extension ButtonStyle where Self == BarkIQButtonStyle {
-    static var primary: Self { .init(color: .barkPrimary) }
+   
+    static var primary: Self {
+        BarkIQButtonStyle(
+            color: .barkPrimary,
+            highlight: .none
+        )
+    }
     
-    static var secondary: Self { .init(color: .barkSecondary) }
+
+    static var secondary: Self {
+        BarkIQButtonStyle(
+            color: .barkSecondary,
+            highlight: .none
+        )
+    }
+    
+    static func quiz(_ highlight: HighlightBehavior = .none) -> Self {
+        BarkIQButtonStyle(
+            color: .barkSecondary,
+            highlight: highlight
+        )
+    }
 }
 
 #Preview {
@@ -62,6 +116,14 @@ extension ButtonStyle where Self == BarkIQButtonStyle {
         
         Button("Secondary Button") {}
             .buttonStyle(.secondary)
+            .scenePadding()
+        
+        Button("Positive Hilight Button") {}
+            .buttonStyle(.quiz(.hilightable(.positive)))
+            .scenePadding()
+        
+        Button("Negative Hilight Button") {}
+            .buttonStyle(.quiz(.hilightable(.negative)))
             .scenePadding()
     }
 }
