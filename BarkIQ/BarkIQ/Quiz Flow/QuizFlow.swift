@@ -10,7 +10,7 @@ import SwiftUI
 struct QuizFlow: View {
     private enum Stage: Hashable {
         case quiz(Question)
-        case results
+        case results([QuestionResult])
         case error(String)
     }
     
@@ -51,8 +51,8 @@ struct QuizFlow: View {
                         navigationPath.append(.error(error))
                     case .question(let question):
                         navigationPath.append(.quiz(question))
-                    case .results:
-                        navigationPath.append(.results)
+                    case .results(let results):
+                        navigationPath.append(.results(results))
                     default:
                         break
                     }
@@ -61,8 +61,8 @@ struct QuizFlow: View {
                     switch stage {
                     case .quiz(let question):
                         QuestionView(question: question)
-                    case .results:
-                        ResultsView()
+                    case .results(let results):
+                        ResultsView(results: results)
                     case .error(let error):
                         QuizFlowErrorView(
                             error: error,
