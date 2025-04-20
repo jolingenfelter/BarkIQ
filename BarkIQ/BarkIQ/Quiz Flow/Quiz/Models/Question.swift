@@ -12,14 +12,14 @@ import Foundation
 /// is automatically added to the choices array.
 struct Question: Hashable, Equatable {
     let location: QuizLocation
-    let imageUrl: URL?
+    let imageUrl: URL
     let questionText: String = "What breed is this dog?"
     let choices: [Breed]
     let answer: Breed
     
     init(
         location: QuizLocation,
-        imageUrl: URL?,
+        imageUrl: URL,
         choices: [Breed],
         answer: Breed
     ) {

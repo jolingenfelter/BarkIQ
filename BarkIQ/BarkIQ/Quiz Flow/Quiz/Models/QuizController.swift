@@ -7,6 +7,25 @@
 
 import SwiftUI
 
+
+/// A stateful controller that manages quiz progression, question generation, and result tracking.
+///
+/// This class is marked as `@Observable` to allow SwiftUI to respond to state changes like
+/// transitioning from a question to results or showing a loading state. However, it aims to remain
+/// as lightweight and intentional as possible, without leaning heavily on the observable pattern
+/// for everything.
+///
+/// Only `currentState` is publicly reactive — most internal state (like question number and results)
+/// is kept private to prevent accidental UI coupling. This keeps the update surface small and helps
+/// avoid the pitfalls of `ObservableObject`, like redundant updates or unintended view re-renders.
+///
+/// The controller handles:
+/// - Fetching and caching breeds (if needed)
+/// - Generating randomized multiple-choice questions
+/// - Tracking which answers were selected
+/// - Returning a final results summary at the end
+///
+/// It’s designed to produce and advance quiz state, not hold onto long-term identity or deep view model logic.
 @Observable
 final class QuizController {
     enum QuizError: Error {

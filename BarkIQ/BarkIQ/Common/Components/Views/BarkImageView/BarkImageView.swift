@@ -7,7 +7,11 @@
 
 import SwiftUI
 
-// TODO: Add documentation for why AsyncImage will not work here
+/// Custom image view used instead of `AsyncImage` because:
+/// - `AsyncImage` uses a shared `URLSession`, which frequently fails for this API
+/// - A `.ephemeral` session is required to avoid persistent QUIC-related connection issues
+/// - This view allows full control over loading, animated transitions, and error handling
+/// - Supports custom placeholders and consistent styling across app use cases
 struct BarkImageView<Placeholder: View>: View {
     enum Phase: Equatable {
         case loading
@@ -30,12 +34,29 @@ struct BarkImageView<Placeholder: View>: View {
             blendDuration: 0.2
     )
     
-    let url: URL?
+    /// The image URL to load. If `nil`, the placeholder will be shown.
+    let url: URL
+    
+    /// The corner radius to apply directly to the image view.
+    ///
+    /// Note: This must be set during initialization. Applying `.cornerRadius`
+    /// externally (to the container of this view) may result in incorrect rendering,
+    /// especially if the image is smaller than its parent frame.
     let cornerRadius: CGFloat
+    
+    /// A view builder that returns a placeholder to be shown while the image loads
+    /// or when the URL is `nil`.
     let placeholder: () -> Placeholder
     
+    /// Initializes a `BarkImageView` with a URL, optional corner radius,
+    /// and a placeholder view to show while loading or on error.
+    ///
+    /// - Parameters:
+    ///   - url: The remote image URL to load.
+    ///   - cornerRadius: The corner radius applied directly to the image. Defaults to 12.
+    ///   - placeholder: A view shown while loading or when the image cannot be loaded.
     init(
-        url: URL?,
+        url: URL,
         cornerRadius: CGFloat = 12,
         @ViewBuilder placeholder: @escaping () -> Placeholder
     ) {
@@ -73,25 +94,16 @@ struct BarkImageView<Placeholder: View>: View {
             await fetchImage()
         }
         .onChange(of: url) { _ , newValue in
-            if newValue == nil {
-                phase = .loading
-            } else {
-                Task {
-                    await fetchImage()
-                }
+            Task {
+                await fetchImage()
             }
         }
     }
     
     private func fetchImage() async {
-        guard let url else {
-            return
-        }
-        
         do {
             let data = try await imageDataLoader.fetchImageData(url)
-            
-            // TODO: Add comments
+        
             if let image = Image(data: data) {
                 withAnimation(phaseTransitionAnimation) {
                     phase = .loaded(image)
@@ -112,7 +124,7 @@ struct BarkImageView<Placeholder: View>: View {
 }
 
 extension BarkImageView where Placeholder == DefaultImagePlaceholder {
-    init(url: URL?) {
+    init(url: URL) {
         self.init(
             url: url,
             placeholder: { DefaultImagePlaceholder() }

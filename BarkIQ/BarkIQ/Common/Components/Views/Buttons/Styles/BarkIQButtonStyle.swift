@@ -80,6 +80,8 @@ private struct PressedEffect: ViewModifier {
 
 extension ButtonStyle where Self == BarkIQButtonStyle {
    
+    /// Uses the app's primary color and standard foreground styling.
+    /// This style does not support highlighting states.
     static var primary: Self {
         BarkIQButtonStyle(
             color: .barkPrimary,
@@ -87,7 +89,8 @@ extension ButtonStyle where Self == BarkIQButtonStyle {
         )
     }
     
-
+    /// Uses the app's secondary color and standard styling.
+    /// This style does not support highlighting states.
     static var secondary: Self {
         BarkIQButtonStyle(
             color: .barkSecondary,
@@ -95,6 +98,14 @@ extension ButtonStyle where Self == BarkIQButtonStyle {
         )
     }
     
+    /// A flexible button style designed for quiz answer choices.
+    ///
+    /// Accepts an optional `HighlightBehavior` to visually indicate correctness
+    /// (e.g., green for correct, red for incorrect). Falls back to a standard secondary style.
+    ///
+    /// - Parameter highlight: A behavior that controls visual feedback when showing an answer.
+    ///   Use `.none` to disable feedback, or `.hilightable(.positive)` / `.hilightable(.negative)`
+    ///   for correct/incorrect styling.
     static func quiz(_ highlight: HighlightBehavior = .none) -> Self {
         BarkIQButtonStyle(
             color: .barkSecondary,

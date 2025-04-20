@@ -8,10 +8,17 @@
 import Foundation
 import OSLog
 
+// Constructed so that it can be inserted into the environment
+// and easily replaced with a mock.
 struct DogApiClient {
     enum Error: Swift.Error {
+        /// Indicates the URL could not be constructed (usually due to a malformed breed).
         case invalidURL
+        
+        /// Indicates a successful HTTP request returned an error from the API (e.g., bad breed name).
         case responseError(String)
+        
+        /// A catch-all for any other unexpected failure.
         case unknown(String)
     }
     

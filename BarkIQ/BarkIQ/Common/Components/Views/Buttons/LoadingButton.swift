@@ -7,11 +7,26 @@
 
 import SwiftUI
 
+/// A button that shows a loading indicator while performing an asynchronous action.
+///
+/// `LoadingButton` disables itself and displays a `ProgressView` while the provided
+/// asynchronous action is executing.
+///
+/// ### Example
+/// ```swift
+/// LoadingButton(action: {
+///     await viewModel.submitForm()
+/// }) {
+///     Text("Submit")
+/// }
+/// .buttonStyle(.primary)
+/// ```
 struct LoadingButton<Label: View>: View {
     let action: () async -> Void
     let label: () -> Label
     
-    @State private var isLoading = false
+    @State
+    private var isLoading = false
     
     init(
         action: @escaping () async -> Void,
