@@ -5,8 +5,8 @@
 //  Created by Jo Lingenfelter on 4/14/25.
 //
 
+import OSLog
 import SwiftUI
-
 
 /// A stateful controller that manages quiz progression, question generation, and result tracking.
 ///
@@ -61,12 +61,13 @@ final class QuizController {
     func reset() {
         self.currentQuestionNumber = 1
         self.results.removeAll()
+        Logger.quizController.info("Reset quiz controller")
     }
     
     func next() async {
        guard currentQuestionNumber <= settings.questionCount else {
+           Logger.quizController.info("Quiz complete with \(self.results.count) results")
            self.currentState = .results(results)
-           self.currentQuestionNumber = 0
            return
         }
         
@@ -78,11 +79,13 @@ final class QuizController {
             let question = try await generateQuestion(title: "\(currentQuestionNumber)/\(settings.questionCount)")
             
             self.currentState = .question(question)
+            Logger.quizController.info("Update state to .question: \(String(describing: question), privacy: .public)")
             
             // Only increment the question number after a succesful
             // fetch has been made
             currentQuestionNumber += 1
         } catch {
+            Logger.quizController.error("Error generating question: \(error.localizedDescription)")
             self.currentState = .error(error.localizedDescription)
         }
     }
@@ -91,6 +94,7 @@ final class QuizController {
     func checkAnswer(for question: Question, selected: Breed) -> QuestionResult {
         let result = QuestionResult(question: question, selectedAnswer: selected)
         results.append(result)
+        Logger.quizController.info("Appended \(result) to results")
         return result
     }
     

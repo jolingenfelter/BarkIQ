@@ -10,7 +10,7 @@ import Foundation
 /// A model representing a QuizQuestion.  Note that
 /// when creating a quiz question, value provided to answer
 /// is automatically added to the choices array.
-struct Question: Hashable, Equatable {
+struct Question: Hashable, Equatable, CustomStringConvertible {
     let location: QuizLocation
     let imageUrl: URL
     let questionText: String = "What breed is this dog?"
@@ -51,5 +51,17 @@ struct Question: Hashable, Equatable {
             choices: distractions,
             answer: answer
         )
+    }
+    
+    var description: String {
+        """
+        Question {
+            location: \(location),
+            imageUrl: \(imageUrl.absoluteString),
+            questionText: \(questionText),
+            choices: \(choices.map(\.displayName).joined(separator: ", "))
+            answer: \(answer.displayName)
+        }
+        """
     }
 }

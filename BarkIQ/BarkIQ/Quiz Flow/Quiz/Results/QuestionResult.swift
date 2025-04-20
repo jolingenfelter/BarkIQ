@@ -16,8 +16,8 @@ struct QuestionResult: Equatable, Hashable, CustomStringConvertible {
     var description: String {
         """
         QuestionResult {
-            selectedAnswer: \(selectedAnswer),
-            correctAnswer: \(question.answer),
+            selectedAnswer: \(selectedAnswer.displayName),
+            correctAnswer: \(question.answer.displayName),
             isCorrect: \(isCorrect)
         }
         """

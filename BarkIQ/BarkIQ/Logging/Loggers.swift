@@ -13,4 +13,6 @@ extension Logger {
     static let `default` = Logger(subsystem: systemIdentifier, category: "Default")
     
     static let networking = Logger(subsystem: systemIdentifier, category: "Networking")
+    
+    static let quizController = Logger(subsystem: systemIdentifier, category: "QuizController")
 }
