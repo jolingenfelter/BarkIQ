@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct BreedStatsListView: View {
-    @Query var stats: [BreedStats]
+    @Query(sort: [SortDescriptor(\BreedStats.name)]) var stats: [BreedStats]
     
     var body: some View {
         List(stats, id: \.name) { stat in
@@ -18,12 +18,10 @@ struct BreedStatsListView: View {
             } label: {
                 HStack {
                     Text(stat.displayName)
-                    Spacer()
-                    ScoreIndicator(level: stat.confidence)
+                    Spacer(minLength: 8)
+                    ConfidenceIndicator(level: stat.confidence)
                 }
-                
             }
-            
         }
         .navigationTitle("Stats by breed")
         .navigationBarTitleDisplayMode(.large)
@@ -38,8 +36,10 @@ struct BreedStatsListView: View {
         configurations: config
     )
     let context = ModelContext(container)
-
-    populatePreviewData(in: context)
+    
+    for stats in BreedStats.mockCollection {
+        context.insert(stats)
+    }
 
     return NavigationStack {
         BreedStatsListView()

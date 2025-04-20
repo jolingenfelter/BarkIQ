@@ -45,7 +45,7 @@ struct ResultsView: View {
                         HStack {
                             Text(result.question.answer.displayName)
                             Spacer()
-                            ScoreIndicator(bool: result.isCorrect)
+                            ConfidenceIndicator(bool: result.isCorrect)
                         }
                     }
                 }

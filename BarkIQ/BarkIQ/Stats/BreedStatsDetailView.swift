@@ -17,7 +17,7 @@ struct BreedStatsDetailView: View {
                 HStack {
                     Text("Confidence")
                     Spacer()
-                    ScoreIndicator(level: stats.confidence)
+                    ConfidenceIndicator(level: stats.confidence)
                 }
 
                 row(

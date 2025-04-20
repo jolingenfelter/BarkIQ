@@ -33,9 +33,10 @@ struct Question: Hashable, Equatable {
     }
     
     static func mock() -> Question {
-        let answer: Breed = .mock1
+        let answer: Breed = Breed.mockArray.first ?? .mock1
         
-        let distractions: [Breed] = [.mock2, .mock3, .mock4]
+        let distractionPool = Breed.mockArray.filter { $0 != answer }
+        let distractions = Array(distractionPool.shuffled().prefix(3))
         
         guard let url = Bundle.main.url(forResource: "jacopo", withExtension: "jpg") else {
             fatalError("Missing or invalid test image")
@@ -47,7 +48,7 @@ struct Question: Hashable, Equatable {
                 totalCount: 5
             ),
             imageUrl: url,
-            choices: distractions.shuffled(),
+            choices: distractions,
             answer: answer
         )
     }

@@ -1,5 +1,5 @@
 //
-//  ScoreIndicator.swift
+//  ConfidenceIndicator.swift
 //  BarkIQ
 //
 //  Created by Jo Lingenfelter on 4/20/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ScoreIndicator: View {
+struct ConfidenceIndicator: View {
     let level: ConfidenceLevel
     
     init(level: ConfidenceLevel) {
@@ -22,14 +22,13 @@ struct ScoreIndicator: View {
         Circle()
             .foregroundStyle(level.colorValue)
             .frame(width: 10, height: 10)
-            .padding(.vertical)
     }
 }
 
 #Preview {
     VStack {
-        ScoreIndicator(level: .high)
-        ScoreIndicator(level: .medium)
-        ScoreIndicator(level: .low)
+        ConfidenceIndicator(level: .high)
+        ConfidenceIndicator(level: .medium)
+        ConfidenceIndicator(level: .low)
     }
 }
