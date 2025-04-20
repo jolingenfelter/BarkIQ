@@ -76,12 +76,19 @@ struct QuestionView: View {
             .scenePadding()
             .animation(.spring, value: isShowingAnswer)
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Quit") {
+                    confirmationAlert = quitConfirmation()
+                }
+            }
+        }
         .background(backgroundColor)
         .navigationBarBackButtonHidden()
         .interactiveDismissDisabled()
         .navigationTitle(question.location.displayText)
         .navigationBarTitleDisplayMode(.large)
-         .confirmationDialog($confirmationAlert)
+        .confirmationDialog($confirmationAlert)
     }
     
     private func quitConfirmation() -> ConfirmationDialogModel {
