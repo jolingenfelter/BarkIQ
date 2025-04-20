@@ -60,9 +60,11 @@ final class QuizController {
         }
     }
     
-    func recordAnswer(for question: Question, selected: Breed) {
+    @discardableResult
+    func checkAnswer(for question: Question, selected: Breed) -> QuestionResult {
         let result = QuestionResult(question: question, selectedAnswer: selected)
         results.append(result)
+        return result
     }
     
     private func generateQuestion(title: String) async throws -> Question {

@@ -9,6 +9,14 @@ struct QuizLocation: Equatable, Hashable {
     let questionNumber: Int
     let totalCount: Int
     
+    var isAtStart: Bool {
+        questionNumber == 1
+    }
+    
+    var isAtEnd: Bool {
+        questionNumber == totalCount
+    }
+    
     var displayText: String {
         "\(questionNumber)/\(totalCount)"
     }

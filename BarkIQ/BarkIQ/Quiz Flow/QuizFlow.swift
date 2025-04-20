@@ -26,53 +26,52 @@ struct QuizFlow: View {
     init(apiClient: DogApiClient) {
         _quizController = State(wrappedValue: QuizController(apiClient: apiClient))
     }
-
+    
+    private var quizActions: QuizActions {
+        QuizActions(
+            next: quizController.next,
+            recordAnswer: { question, selected in
+                quizController.checkAnswer(
+                    for: question,
+                    selected: selected
+                )
+            },
+            quit: {
+                dismiss()
+            }
+        )
+    }
+    
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            QuizSetupView(
-                settings: $quizController.settings,
-                startQuizAction: {
-                    await quizController.next()
-                },
-                dismissAction: {
-                    dismiss()
+            QuizSetupView(settings: $quizController.settings)
+                .onChange(of: quizController.currentState) { oldValue, newValue in
+                    switch newValue {
+                    case .error(let error):
+                        navigationPath.append(.error(error))
+                    case .question(let question):
+                        navigationPath.append(.quiz(question))
+                    case .results:
+                        navigationPath.append(.results)
+                    default:
+                        break
+                    }
                 }
-            )
-            .onChange(of: quizController.currentState) { oldValue, newValue in
-                switch newValue {
-                case .error(let error):
-                    navigationPath.append(.error(error))
-                case .question(let question):
-                    navigationPath.append(.quiz(question))
-                case .results:
-                    navigationPath.append(.results)
-                default:
-                    break
+                .navigationDestination(for: Stage.self) { stage in
+                    switch stage {
+                    case .quiz(let question):
+                        QuestionView(question: question)
+                    case .results:
+                        ResultsView()
+                    case .error(let error):
+                        QuizFlowErrorView(
+                            error: error,
+                            retryAction: quizController.next
+                        )
+                    }
                 }
-            }
-            .navigationDestination(for: Stage.self) { stage in
-                switch stage {
-                case .quiz(let question):
-                    QuestionView(
-                        question: question,
-                        answerAction: { answer in
-                            quizController.recordAnswer(for: question, selected: answer)
-                        },
-                        nextAction: quizController.next,
-                        quitAction: {
-                            dismiss()
-                        }
-                    )
-                case .results:
-                    ResultsView()
-                case .error(let error):
-                    QuizFlowErrorView(
-                        error: error,
-                        retryAction: quizController.next
-                    )
-                }
-            }
         }
+        .environment(\.quizActions, quizActions)
     }
 }
 

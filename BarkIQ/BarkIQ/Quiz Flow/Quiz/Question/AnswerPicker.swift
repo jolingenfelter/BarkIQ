@@ -9,69 +9,62 @@ import SwiftUI
 
 extension QuestionView {
     struct AnswerPicker: View {
-        let choices: [Breed]
-        let correctAnswer: Breed
+        @Environment(\.quizActions)
+        private var quizActions
         
         @Binding
         var questionStage: QuestionStage
         
-        @State
-        private var selectedChoice: Breed? = nil
-
-        let selectChoiceAction: (Breed) -> Void
+        let question: Question
         
-        private var isShowingAnswer: Bool {
-            guard case .showAnswer = questionStage else {
-                return false
-            }
-            
-            return true
-        }
-
         var body: some View {
             VStack(alignment: .leading, spacing: 16) {
-                ForEach(choices) { choice in
+                ForEach(question.choices) { choice in
                     choiceButton(choice)
                 }
             }
         }
-
+        
         @ViewBuilder
         private func choiceButton(_ choice: Breed) -> some View {
+            let isCorrect = choice == question.answer
             var highlight: HighlightBehavior {
-                  guard case .showAnswer = questionStage else { return .none }
-
-                  if choice == correctAnswer {
-                      return .hilightable(.positive)
-                  } else if choice == selectedChoice {
-                      return .hilightable(.negative)
-                  } else {
-                      return .none
-                  }
-              }
-
+                guard case .showAnswer(let result) = questionStage else {
+                    return .none
+                }
+                
+                if isCorrect {
+                    return .hilightable(.positive)
+                } else if choice == result.selectedAnswer {
+                    return .hilightable(.negative)
+                } else {
+                    return .none
+                }
+            }
+            
             Button(choice.displayName) {
-                let isCorrect = choice == correctAnswer
-                selectedChoice = choice
-                questionStage = .showAnswer(isCorrect)
+                guard let result = quizActions.recordAnswer(question, choice) else {
+                    return
+                }
+                
+                questionStage = .showAnswer(result)
             }
             .buttonStyle(.quiz(highlight))
-            .disabled(isShowingAnswer)
+            .disabled(questionStage != .ask)
         }
     }
 }
 
 private struct AnswerPickerPreviewWrapper: View {
     @State private var stage: QuestionView.QuestionStage = .ask
-
+    
     var body: some View {
         VStack(spacing: 48) {
-            QuestionView.AnswerPicker(
-                choices: Breed.mockArray,
-                correctAnswer: .mock1,
-                questionStage: $stage,
-                selectChoiceAction: { _ in }
-            )
+            QuestionView
+                .AnswerPicker(
+                    questionStage: $stage,
+                    question: .mock()
+                )
             
             if case .showAnswer = stage {
                 Button("Reset") {

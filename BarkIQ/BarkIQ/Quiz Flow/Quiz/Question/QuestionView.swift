@@ -10,8 +10,11 @@ import SwiftUI
 struct QuestionView: View {
     enum QuestionStage: Equatable {
         case ask
-        case showAnswer(_ isCorrect: Bool)
+        case showAnswer(_ result: QuestionResult)
     }
+    
+    @Environment(\.quizActions)
+    private var quizActions
     
     @ScaledMetric
     private var questionTextSpacing: CGFloat = 24
@@ -32,17 +35,18 @@ struct QuestionView: View {
     
     private var backgroundColor: Color {
         switch questionStage {
-        case .showAnswer(let isCorrect):
-            return (isCorrect ? Color.green : Color.red).opacity(0.18)
+        case .showAnswer(let result):
+            return (result.isCorrect ? Color.green : Color.red).opacity(0.18)
         default:
             return .barkBackground
         }
     }
     
+    private var nextButtonText: String {
+        question.location.isAtEnd ? "See results" : "Next"
+    }
+    
     let question: Question
-    let answerAction: (Breed) -> Void
-    let nextAction: () async -> Void
-    let quitAction: () -> Void
     
     var body: some View {
         ScrollingContentView { geometry in
@@ -56,17 +60,13 @@ struct QuestionView: View {
                 
                 VStack(spacing: 48) {
                     AnswerPicker(
-                        choices: question.choices,
-                        correctAnswer: question.answer,
                         questionStage: $questionStage,
-                        selectChoiceAction: answerAction
+                        question: question
                     )
                     
-                    // Some sort of "continue" action
-                    // to handle ending a quiz
                     if isShowingAnswer {
-                        LoadingButton("Next") {
-                            await nextAction()
+                        LoadingButton(nextButtonText) {
+                            await quizActions.next()
                         }
                         .buttonStyle(.primary)
                         .transition(.slide)
@@ -88,7 +88,7 @@ struct QuestionView: View {
         let action = ConfirmationDialogModel.Action(
             "Quit now",
             role: .destructive,
-            action: quitAction
+            action: quizActions.quit
         )
         
         let model = ConfirmationDialogModel(
@@ -101,10 +101,5 @@ struct QuestionView: View {
 }
 
 #Preview {
-    QuestionView(
-        question: .mock(),
-        answerAction: { _ in },
-        nextAction: {},
-        quitAction: {}
-    )
+    QuestionView(question: .mock())
 }
