@@ -21,7 +21,7 @@ struct QuestionView: View {
     @Environment(\.quizActions)
     private var quizActions
     
-    @ScaledMetric
+    @ScaledMetric(relativeTo: .largeTitle)
     private var questionTextSpacing: CGFloat = 24
     
     @State
@@ -36,6 +36,10 @@ struct QuestionView: View {
         }
 
         return true
+    }
+    
+    private var showNextButton: Bool {
+        isShowingAnswer && mode == .play
     }
     
     private var titleText: String {
@@ -64,12 +68,18 @@ struct QuestionView: View {
     
     let question: Question
     
+    /// Initialize a `QuestionView` in an interactive game-mode
+    /// as part of a quiz.
     init(question: Question) {
         self.question = question
         self.mode = .play
         _questionStage = State(wrappedValue: .ask)
     }
     
+    /// Initialize a `QuestionView` from a `QuestionResult` to put the view
+    /// in a read-only mode that shows a selection in context of whether it was
+    /// right or wrong.  Note when initialized this way, this view is not interactable
+    /// and the next button is hidden.
     init(result: QuestionResult) {
         self.question = result.question
         self.mode = .review
@@ -83,34 +93,33 @@ struct QuestionView: View {
                     .frame(height: geometry.size.height * 0.35)
                     .frame(maxWidth: .infinity)
                 
-                Text(question.questionText)
-                    .font(.system(.body, design: .monospaced).bold())
-                
-                VStack(spacing: 48) {
-                    AnswerPicker(
-                        questionStage: $questionStage,
-                        question: question
-                    )
+                VStack(spacing: questionTextSpacing) {
+                    Text(question.questionText)
+                        .font(.system(.body, design: .monospaced).bold())
                     
-                    if isShowingAnswer && mode == .play {
-                        LoadingButton(nextButtonText) {
-                            await quizActions.next()
+                    VStack(spacing: 48) {
+                        AnswerPicker(
+                            questionStage: $questionStage,
+                            question: question
+                        )
+                        
+                        if showNextButton {
+                            LoadingButton(nextButtonText) {
+                                await quizActions.next()
+                            }
+                            .buttonStyle(.primary)
+                            .transition(.slide)
                         }
-                        .buttonStyle(.primary)
-                        .transition(.slide)
                     }
                 }
+                .padding(.horizontal, 40)
             }
             .scenePadding()
             .animation(.spring, value: isShowingAnswer)
         }
         .toolbar {
-            if mode == .play {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Quit") {
-                        confirmationAlert = quitConfirmation()
-                    }
-                }
+            ToolbarItem(placement: .topBarTrailing) {
+               exitButton
             }
         }
         .background(backgroundColor)
@@ -118,6 +127,19 @@ struct QuestionView: View {
         .navigationTitle(titleText)
         .navigationBarTitleDisplayMode(.large)
         .confirmationDialog($confirmationAlert)
+    }
+    
+    private var exitButton: some View {
+        switch mode {
+        case .review:
+            Button("Done") {
+                quizActions.quit()
+            }
+        case .play:
+            Button("Quit") {
+                confirmationAlert = quitConfirmation()
+            }
+        }
     }
     
     private func quitConfirmation() -> ConfirmationDialogModel {
