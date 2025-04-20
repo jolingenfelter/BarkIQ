@@ -26,7 +26,10 @@ struct Question: Hashable, Equatable {
     ) {
         self.number = number
         self.imageUrl = imageUrl
-        self.choices = choices + [answer]
+        
+        let allChoices  = choices + [answer]
+        self.choices = allChoices.shuffled()
+        
         self.answer = answer
     }
     

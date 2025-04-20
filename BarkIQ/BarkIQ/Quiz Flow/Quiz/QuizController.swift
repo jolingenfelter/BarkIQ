@@ -14,7 +14,7 @@ final class QuizController {
     }
     
     enum QuizStep {
-        case question(Question)
+        case question(Question?)
         case error(String)
         case results
     }
@@ -24,7 +24,7 @@ final class QuizController {
     private let settings: QuizSettings
     private let apiClient: DogApiClient
     
-    private(set) var currentStep: QuizStep?
+    private(set) var currentStep: QuizStep = .question(nil)
 
     init(settings: QuizSettings,
          apiClient: DogApiClient
@@ -33,24 +33,12 @@ final class QuizController {
         self.apiClient = apiClient
     }
     
-    private var currentQuestion: Question? {
-        guard let step = currentStep, case .question(let question) = step else {
+    var currentQuestion: Question? {
+        guard case .question(let question) = currentStep else {
             return nil
         }
         
         return question
-    }
-    
-    var imageUrl: URL? {
-        currentQuestion?.imageUrl
-    }
-    
-    var questionText: String? {
-        currentQuestion?.questionText
-    }
-    
-    var choices: [Breed] {
-        currentQuestion?.choices ?? []
     }
     
     var progressDisplay: String {
@@ -62,7 +50,8 @@ final class QuizController {
            self.currentStep = .results
            return
         }
-    
+        
+        self.currentStep = .question(nil)
         currentQuestionNumber += 1
         
         do {
@@ -74,11 +63,11 @@ final class QuizController {
     }
     
     func checkAnswer(selected: Breed) -> Bool {
-        guard let step = currentStep, case .question(let question) = step else {
+        guard case .question(let question) = currentStep else {
             return false
         }
         
-        return question.answer == selected
+        return question?.answer == selected
     }
     
     private func generateQuestion(number: Int) async throws -> Question {

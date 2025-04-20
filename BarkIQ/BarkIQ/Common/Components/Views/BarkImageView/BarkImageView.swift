@@ -43,22 +43,27 @@ struct BarkImageView<Placeholder: View>: View {
             case .loaded(let image):
                 image
                     .resizable()
-                    .scaledToFill()
+                    .scaledToFit()
             case .error(let error):
                 VStack(spacing: retrySpacing) {
                     Text("Error loading image: \(error)")
-                    Button("Retry", systemImage: "arrow.clockwise") {
-                        
+                    RetryButton {
+                        await fetchImage()
                     }
                 }
             }
         }
+        .cornerRadius(12)
         .task {
             await fetchImage()
         }
         .onChange(of: url) { _ , newValue in
-            Task {
-                await fetchImage()
+            if newValue == nil {
+                phase = .loading
+            } else {
+                Task {
+                    await fetchImage()
+                }
             }
         }
         .animation(.default, value: phase)

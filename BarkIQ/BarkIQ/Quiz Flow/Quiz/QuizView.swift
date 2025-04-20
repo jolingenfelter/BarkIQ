@@ -8,31 +8,11 @@
 import SwiftUI
 
 struct QuizView: View {
-    enum QuestionStage: Equatable {
-        case ask
-        case showAnswer(_ isCorrect: Bool)
-    }
-    
-    @ScaledMetric
-    private var questionTextSpacing: CGFloat = 24
-    
     @State
     private var quizController: QuizController
     
     @State
-    private var questionStage: QuestionStage = .ask
-    
-    @State
     private var confirmationAlert: ConfirmationDialogModel?
-    
-    private var backgroundColor: Color {
-        switch questionStage {
-        case .ask:
-            return .barkBackground
-        case .showAnswer(let isCorrect):
-            return (isCorrect ? Color.green : Color.red).opacity(0.25)
-        }
-    }
     
     let showResults: () -> Void
     let quitAction: () -> Void
@@ -49,59 +29,46 @@ struct QuizView: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: questionTextSpacing) {
-                    BarkImageView(url: quizController.imageUrl)
-                    .frame(
-                        maxWidth: geometry.size.width - geometry.safeAreaInsets.leading - geometry.safeAreaInsets.trailing,
-                        minHeight: geometry.size.height * 0.3,
-                        maxHeight: geometry.size.height * 0.4
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    
-                    if let questionText = quizController.questionText {
-                        Text(questionText)
-                            .font(.system(.body, design: .monospaced).bold())
-                    }
-                    
-                    VStack(spacing: 16) {
-                        ForEach(quizController.choices) { breed in
-                            Button(breed.displayName) {
-                                let isCorrect = quizController.checkAnswer(selected: breed)
-                                
-                                questionStage = .showAnswer(isCorrect)
-                            }
-                            .buttonStyle(.secondary)
-                        }
-                    }
-                    
-                }
-                .task {
-                    await quizController.next()
-                }
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Quit") {
-                            confirmationAlert = quitConfirmation()
-                        }
-                    }
-                }
-                .scenePadding()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .navigationBarBackButtonHidden()
-                .interactiveDismissDisabled()
-                .navigationTitle(quizController.progressDisplay)
-                .animation(.default, value: questionStage)
-                .confirmationDialog($confirmationAlert)
+        Group {
+            switch quizController.currentStep {
+            case .question(let question):
+                QuestionView(
+                    question: question,
+                    answerAction: quizController.checkAnswer(selected:),
+                    nextAction: quizController.next
+                )
+            case .error(let error):
+                ErrorView(
+                    error: error,
+                    retryAction: quizController.next
+                )
+            default:
+                LoadingView()
             }
         }
-        .background(backgroundColor)
+        .task {
+            await quizController.next()
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Quit") {
+                    confirmationAlert = quitConfirmation()
+                }
+            }
+        }
+        .navigationBarBackButtonHidden()
+        .interactiveDismissDisabled()
+        .navigationTitle(quizController.progressDisplay)
+        .confirmationDialog($confirmationAlert)
     }
     
     private func quitConfirmation() -> ConfirmationDialogModel {
         let action = ConfirmationDialogModel.Action("Quit now", role: .destructive, action: quitAction)
-        let model = ConfirmationDialogModel(title: "Are you sure you want to quit?", message: "Your results will not be saved.", actions: [action])
+        let model = ConfirmationDialogModel(
+            title: "Are you sure you want to quit?",
+            message: "Your results will not be saved.",
+            actions: [action]
+        )
         return model
     }
 }
@@ -114,4 +81,5 @@ struct QuizView: View {
         quitAction: {}
     )
     .environment(\.imageDataLoader, .mock)
+    .environment(\.dogApiClient, .mock)
 }
