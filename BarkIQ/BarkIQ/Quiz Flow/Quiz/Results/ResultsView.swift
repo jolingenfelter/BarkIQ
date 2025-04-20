@@ -29,7 +29,7 @@ struct ResultsView: View {
             Section {
                 ForEach(results, id: \.self) { result in
                     NavigationLink {
-                        Text("Hello")
+                        QuestionView(result: result)
                     } label: {
                         HStack {
                             Text(result.question.answer.displayName)

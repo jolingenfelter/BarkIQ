@@ -13,6 +13,11 @@ struct QuestionView: View {
         case showAnswer(_ result: QuestionResult)
     }
     
+    enum Mode {
+        case review
+        case play
+    }
+    
     @Environment(\.quizActions)
     private var quizActions
     
@@ -20,7 +25,7 @@ struct QuestionView: View {
     private var questionTextSpacing: CGFloat = 24
     
     @State
-    private var questionStage: QuestionStage = .ask
+    private var questionStage: QuestionStage
     
     @State
     private var confirmationAlert: ConfirmationDialogModel?
@@ -46,7 +51,21 @@ struct QuestionView: View {
         question.location.isAtEnd ? "See results" : "Next"
     }
     
+    private let mode: Mode
+    
     let question: Question
+    
+    init(question: Question) {
+        self.question = question
+        self.mode = .play
+        _questionStage = State(wrappedValue: .ask)
+    }
+    
+    init(result: QuestionResult) {
+        self.question = result.question
+        self.mode = .review
+        _questionStage = State(wrappedValue: .showAnswer(result))
+    }
     
     var body: some View {
         ScrollingContentView { geometry in
@@ -64,7 +83,7 @@ struct QuestionView: View {
                         question: question
                     )
                     
-                    if isShowingAnswer {
+                    if isShowingAnswer && mode == .play {
                         LoadingButton(nextButtonText) {
                             await quizActions.next()
                         }
@@ -77,14 +96,16 @@ struct QuestionView: View {
             .animation(.spring, value: isShowingAnswer)
         }
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Quit") {
-                    confirmationAlert = quitConfirmation()
+            if mode == .play {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Quit") {
+                        confirmationAlert = quitConfirmation()
+                    }
                 }
             }
         }
         .background(backgroundColor)
-        .navigationBarBackButtonHidden()
+        .navigationBarBackButtonHidden(mode == .play)
         .interactiveDismissDisabled()
         .navigationTitle(question.location.displayText)
         .navigationBarTitleDisplayMode(.large)

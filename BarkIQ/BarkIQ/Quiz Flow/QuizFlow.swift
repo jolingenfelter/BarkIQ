@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct QuizFlow: View {
-    private enum Stage: Hashable {
+    private enum Stage: Hashable, Equatable {
         case quiz(Question)
         case results([QuestionResult])
         case error(String)
