@@ -19,6 +19,9 @@ struct QuestionView: View {
     @State
     private var questionStage: QuestionStage = .ask
     
+    @State
+    private var confirmationAlert: ConfirmationDialogModel?
+    
     private var isShowingAnswer: Bool {
         guard case .showAnswer = questionStage else {
             return false
@@ -36,25 +39,24 @@ struct QuestionView: View {
         }
     }
     
-    let question: Question?
+    let question: Question
     let answerAction: (Breed) -> Bool
     let nextAction: () async -> Void
+    let quitAction: () -> Void
     
     var body: some View {
         ScrollingContentView { geometry in
             VStack(spacing: questionTextSpacing) {
-                BarkImageView(url: question?.imageUrl)
+                BarkImageView(url: question.imageUrl)
                     .frame(height: geometry.size.height * 0.35)
                     .frame(maxWidth: .infinity)
                 
-                if let question {
-                    Text(question.questionText)
-                        .font(.system(.body, design: .monospaced).bold())
-                }
+                Text(question.questionText)
+                    .font(.system(.body, design: .monospaced).bold())
                 
                 VStack(spacing: 48) {
                     VStack(spacing: 16) {
-                        ForEach(question?.choices ?? []) { breed in
+                        ForEach(question.choices) { breed in
                             Button(breed.displayName) {
                                 let isCorrect = answerAction(breed)
                                 questionStage = .showAnswer(isCorrect)
@@ -81,9 +83,24 @@ struct QuestionView: View {
         .background(backgroundColor)
         .navigationBarBackButtonHidden()
         .interactiveDismissDisabled()
-//        .navigationTitle(quizController.progressDisplay)
+        .navigationTitle(question.title)
         .navigationBarTitleDisplayMode(.large)
-        // .confirmationDialog($confirmationAlert)
+         .confirmationDialog($confirmationAlert)
+    }
+    
+    private func quitConfirmation() -> ConfirmationDialogModel {
+        let action = ConfirmationDialogModel.Action(
+            "Quit now",
+            role: .destructive,
+            action: quitAction
+        )
+        
+        let model = ConfirmationDialogModel(
+            title: "Are you sure you want to quit?",
+            message: "Your results will not be saved.",
+            actions: [action]
+        )
+        return model
     }
 }
 
@@ -93,5 +110,7 @@ struct QuestionView: View {
         answerAction: { _ in
             return Bool.random()
         },
-        nextAction: {})
+        nextAction: {},
+        quitAction: {}
+    )
 }

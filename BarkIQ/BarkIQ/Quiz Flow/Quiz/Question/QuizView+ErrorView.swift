@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension QuizView {
+extension QuizFlow {
     struct ErrorView: View {
         @ScaledMetric(relativeTo: .largeTitle)
         private var verticalSpacing: CGFloat = 12
@@ -32,7 +32,7 @@ extension QuizView {
 }
 
 #Preview {
-    QuizView.ErrorView(
+    QuizFlow.ErrorView(
         error: "An unknown error occured",
         retryAction: {
             try? await Task.sleep(for: .seconds(2))

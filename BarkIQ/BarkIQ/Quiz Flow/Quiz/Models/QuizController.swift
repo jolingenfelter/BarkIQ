@@ -31,44 +31,26 @@ final class QuizController {
         self.apiClient = apiClient
     }
     
-    var currentQuestion: Question? {
-        guard case .question(let question) = currentState else {
-            return nil
-        }
-        
-        return question
-    }
-    
-    var progressDisplay: String {
-        guard case .question = currentState else {
-            return ""
-        }
-        
-        return "\(currentQuestionNumber)/\(settings.questionCount)"
-    }
-    
-    func startQuiz() async {
-        do {
-            let breeds = try await apiClient.fetchBreeds()
-            self.settings.breeds = breeds
-            
-            await next()
-        } catch {
-            self.currentState = .error(error.localizedDescription)
+    private func fetchBreedsIfNeeded() async throws {
+        if settings.breeds.isEmpty {
+            settings.breeds = try await apiClient.fetchBreeds()
         }
     }
     
     func next() async {
        guard currentQuestionNumber < settings.questionCount else {
            self.currentState = .results
+           self.currentQuestionNumber = 0
            return
         }
         
         self.currentState = .loading
         
         do {
-            let question = try await generateQuestion()
+            try await fetchBreedsIfNeeded()
+            
             currentQuestionNumber += 1
+            let question = try await generateQuestion(title: "\(currentQuestionNumber)/\(settings.questionCount)")
             
             self.currentState = .question(question)
         } catch {
@@ -84,7 +66,7 @@ final class QuizController {
         return question.answer == selected
     }
     
-    private func generateQuestion() async throws -> Question {
+    private func generateQuestion(title: String) async throws -> Question {
         guard let answer = settings.breeds.randomElement() else {
             throw QuizError.failedToGenerateQuestion
         }
@@ -105,6 +87,7 @@ final class QuizController {
         let choices = (distractors).shuffled()
 
         return Question(
+            title: title,
             imageUrl: imageUrl,
             choices: choices,
             answer: answer

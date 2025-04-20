@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension QuizView {
+extension QuizFlow {
     struct LoadingView: View {
         var body: some View {
             ScrollingContentView { geometry in
@@ -23,5 +23,5 @@ extension QuizView {
 }
 
 #Preview {
-    QuizView.LoadingView()
+    QuizFlow.LoadingView()
 }

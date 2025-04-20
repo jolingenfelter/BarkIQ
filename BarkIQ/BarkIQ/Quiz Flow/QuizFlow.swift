@@ -32,7 +32,7 @@ struct QuizFlow: View {
             QuizSetupView(
                 settings: $quizController.settings,
                 startQuizAction: {
-                    await quizController.startQuiz()
+                    await quizController.next()
                 },
                 dismissAction: {
                     dismiss()
@@ -56,12 +56,15 @@ struct QuizFlow: View {
                     QuestionView(
                         question: question,
                         answerAction: quizController.checkAnswer(selected:),
-                        nextAction: quizController.next
+                        nextAction: quizController.next,
+                        quitAction: {
+                            dismiss()
+                        }
                     )
                 case .results:
                     ResultsView()
                 case .error(let error):
-                    QuizView.ErrorView(
+                    ErrorView(
                         error: error,
                         retryAction: quizController.next
                     )
