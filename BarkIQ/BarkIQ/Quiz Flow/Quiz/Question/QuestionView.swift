@@ -40,7 +40,7 @@ struct QuestionView: View {
     }
     
     let question: Question
-    let answerAction: (Breed) -> Bool
+    let answerAction: (Breed) -> Void
     let nextAction: () async -> Void
     let quitAction: () -> Void
     
@@ -58,7 +58,7 @@ struct QuestionView: View {
                     VStack(spacing: 16) {
                         ForEach(question.choices) { breed in
                             Button(breed.displayName) {
-                                let isCorrect = answerAction(breed)
+                                let isCorrect = breed == question.answer
                                 questionStage = .showAnswer(isCorrect)
                             }
                             .buttonStyle(.secondary)
@@ -83,7 +83,7 @@ struct QuestionView: View {
         .background(backgroundColor)
         .navigationBarBackButtonHidden()
         .interactiveDismissDisabled()
-        .navigationTitle(question.title)
+        .navigationTitle(question.location.displayText)
         .navigationBarTitleDisplayMode(.large)
          .confirmationDialog($confirmationAlert)
     }

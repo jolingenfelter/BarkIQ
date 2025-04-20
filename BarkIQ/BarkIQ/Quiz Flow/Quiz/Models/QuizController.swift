@@ -16,7 +16,7 @@ final class QuizController {
     enum QuizState: Equatable {
         case question(Question)
         case error(String)
-        case results
+        case results([QuestionResult])
         case loading
     }
 
@@ -26,6 +26,8 @@ final class QuizController {
     private let apiClient: DogApiClient
     
     private(set) var currentState: QuizState = .loading
+    
+    private var results: [QuestionResult] = []
 
     init(apiClient: DogApiClient) {
         self.apiClient = apiClient
@@ -39,7 +41,7 @@ final class QuizController {
     
     func next() async {
        guard currentQuestionNumber < settings.questionCount else {
-           self.currentState = .results
+           self.currentState = .results(results)
            self.currentQuestionNumber = 0
            return
         }
@@ -58,12 +60,9 @@ final class QuizController {
         }
     }
     
-    func checkAnswer(selected: Breed) -> Bool {
-        guard case .question(let question) = currentState else {
-            return false
-        }
-        
-        return question.answer == selected
+    func recordAnswer(for question: Question, selected: Breed) {
+        let result = QuestionResult(question: question, selectedAnswer: selected)
+        results.append(result)
     }
     
     private func generateQuestion(title: String) async throws -> Question {
@@ -85,9 +84,14 @@ final class QuizController {
         let distractors = Array(otherBreeds.prefix(numberOfChoices - 1))
 
         let choices = (distractors).shuffled()
+        
+        let location = QuizLocation(
+            questionNumber: currentQuestionNumber,
+            totalCount: settings.questionCount
+        )
 
         return Question(
-            title: title,
+            location: location,
             imageUrl: imageUrl,
             choices: choices,
             answer: answer

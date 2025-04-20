@@ -55,7 +55,9 @@ struct QuizFlow: View {
                 case .quiz(let question):
                     QuestionView(
                         question: question,
-                        answerAction: quizController.checkAnswer(selected:),
+                        answerAction: { answer in
+                            quizController.recordAnswer(for: question, selected: answer)
+                        },
                         nextAction: quizController.next,
                         quitAction: {
                             dismiss()
@@ -64,7 +66,7 @@ struct QuizFlow: View {
                 case .results:
                     ResultsView()
                 case .error(let error):
-                    ErrorView(
+                    QuizFlowErrorView(
                         error: error,
                         retryAction: quizController.next
                     )
