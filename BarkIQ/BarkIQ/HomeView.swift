@@ -14,37 +14,39 @@ struct HomeView: View {
     @State private var isShowingSetupSheet = false
     
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: 44) {
-                    Text("BarkIQ")
-                        .font(.system(.largeTitle, design: .monospaced))
-                        .foregroundColor(.barkText)
-                        .fontWeight(.semibold)
-                    
-                    VStack(spacing: 16) {
-                        Button("Quiz me!") {
-                            isShowingSetupSheet = true
-                        }
-                        .buttonStyle(.primary)
+        NavigationStack {
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: 44) {
+                        Text("BarkIQ")
+                            .font(.system(.largeTitle, design: .monospaced))
+                            .foregroundColor(.barkText)
+                            .fontWeight(.semibold)
                         
-                        Button("Stats") {
+                        VStack(spacing: 16) {
+                            Button("Quiz me!") {
+                                isShowingSetupSheet = true
+                            }
+                            .buttonStyle(.primary)
                             
+                            NavigationLink("Stats") {
+                                BreedStatsListView()
+                            }
+                            .buttonStyle(.primary)
                         }
-                        .buttonStyle(.primary)
                     }
+                    .scenePadding()
+                    .frame(
+                        minWidth: geometry.size.width,
+                        minHeight: geometry.size.height,
+                        alignment: .center
+                    )
                 }
-                .scenePadding()
-                .frame(
-                    minWidth: geometry.size.width,
-                    minHeight: geometry.size.height,
-                    alignment: .center
-                )
             }
-        }
-        .background(.barkBackground)
-        .sheet(isPresented: $isShowingSetupSheet) {
-            QuizFlow(apiClient: apiClient)
+            .background(.barkBackground)
+            .sheet(isPresented: $isShowingSetupSheet) {
+                QuizFlow(apiClient: apiClient)
+            }
         }
     }
 }

@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ResultsView: View {
+    @Environment(\.modelContext)
+    private var modelContext
+    
     @Environment(\.quizActions.restart)
     private var restart
     
@@ -53,6 +57,9 @@ struct ResultsView: View {
                 .padding(.top, 28)
             }
         }
+        .task {
+            persistStats(from: results, in: modelContext)
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") {
@@ -62,6 +69,32 @@ struct ResultsView: View {
         }
         .navigationTitle("Score")
         .navigationBarBackButtonHidden()
+    }
+    
+    private func updateStats(_ stats: BreedStats, for result: QuestionResult) {
+        if result.isCorrect {
+            stats.appendCorrectResponse()
+        } else {
+            stats.incorrectResponse()
+        }
+    }
+    
+    private func persistStats(from results: [QuestionResult], in context: ModelContext) {
+        for result in results {
+            let breedName = result.question.answer.name
+
+            let descriptor = FetchDescriptor<BreedStats>(predicate: #Predicate { $0.name == breedName })
+
+            if let existing = try? context.fetch(descriptor).first {
+                updateStats(existing, for: result)
+            } else {
+                let newStats = BreedStats(breed: result.question.answer)
+                updateStats(newStats, for: result)
+                context.insert(newStats)
+            }
+        }
+
+        try? context.save()
     }
 }
 

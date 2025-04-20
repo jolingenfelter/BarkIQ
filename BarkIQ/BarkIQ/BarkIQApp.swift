@@ -14,5 +14,6 @@ struct BarkIQApp: App {
         WindowGroup {
             HomeView()
         }
+        .modelContainer(for: [BreedStats.self])
     }
 }
