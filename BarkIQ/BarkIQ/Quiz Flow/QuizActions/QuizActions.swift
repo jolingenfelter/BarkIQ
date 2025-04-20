@@ -10,4 +10,5 @@ struct QuizActions {
     var next: () async -> Void
     var recordAnswer: (_ question: Question, _ selected: Breed) -> QuestionResult?
     var quit: () -> Void
+    var restart: () -> Void
 }

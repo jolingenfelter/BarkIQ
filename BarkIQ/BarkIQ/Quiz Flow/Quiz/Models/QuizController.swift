@@ -22,12 +22,12 @@ final class QuizController {
 
     private var currentQuestionNumber: Int = 0
     
-    var settings = QuizSettings()
-    private let apiClient: DogApiClient
-    
     private(set) var currentState: QuizState = .loading
     
     private var results: [QuestionResult] = []
+    
+    var settings = QuizSettings()
+    let apiClient: DogApiClient
 
     init(apiClient: DogApiClient) {
         self.apiClient = apiClient
@@ -37,6 +37,11 @@ final class QuizController {
         if settings.breeds.isEmpty {
             settings.breeds = try await apiClient.fetchBreeds()
         }
+    }
+    
+    func reset() {
+        self.currentQuestionNumber = 0
+        self.results.removeAll()
     }
     
     func next() async {

@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ResultsView: View {
+    @Environment(\.quizActions.restart)
+    private var restart
+    
     let results: [QuestionResult]
     
     init(results: [QuestionResult]) {
@@ -37,7 +40,7 @@ struct ResultsView: View {
                 }
             } footer: {
                 LoadingButton("Take another quiz!") {
-                   
+                   restart()
                 }
                 .buttonStyle(.primary)
                 .padding(.top, 28)

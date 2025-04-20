@@ -13,7 +13,8 @@ private struct QuizActionsKey: EnvironmentKey {
         recordAnswer: { _, _ in
             return nil
         },
-        quit: {}
+        quit: {},
+        restart: {}
     )
 }
 

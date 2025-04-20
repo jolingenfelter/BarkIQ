@@ -38,6 +38,10 @@ struct QuizFlow: View {
             },
             quit: {
                 dismiss()
+            },
+            restart: {
+                navigationPath.removeAll()
+                quizController.reset()
             }
         )
     }
