@@ -36,7 +36,7 @@ struct BarkImageView<Placeholder: View>: View {
     }
     
     var body: some View {
-        ZStack {
+        Group {
             switch phase {
             case .loading:
                 placeholder()
