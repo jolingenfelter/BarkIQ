@@ -24,6 +24,12 @@ struct BarkImageView<Placeholder: View>: View {
     @Environment(\.imageDataLoader)
     private var imageDataLoader: ImageDataLoader
     
+    private let phaseTransitionAnimation = Animation.spring(
+            response: 0.4,
+            dampingFraction: 0.75,
+            blendDuration: 0.2
+    )
+    
     let url: URL?
     let cornerRadius: CGFloat
     let placeholder: () -> Placeholder
@@ -56,7 +62,12 @@ struct BarkImageView<Placeholder: View>: View {
                 }
             }
         }
-        .transition(.asymmetric(insertion: .scale(scale: 0.98), removal: .opacity))
+        .transition(
+            .asymmetric(
+                insertion: .scale(scale: 0.9).combined(with: .opacity),
+                removal: .opacity
+            )
+        )
         .cornerRadius(cornerRadius)
         .task {
             await fetchImage()
@@ -82,18 +93,18 @@ struct BarkImageView<Placeholder: View>: View {
             
             // TODO: Add comments
             if let image = Image(data: data) {
-                withAnimation(.spring) {
+                withAnimation(phaseTransitionAnimation) {
                     phase = .loaded(image)
                 }
             } else {
-                withAnimation {
+                withAnimation(phaseTransitionAnimation) {
                     phase = .error("Error converting data to image")
                 }
                 
             }
 
         } catch {
-            withAnimation {
+            withAnimation(phaseTransitionAnimation) {
                 phase = .error(error.localizedDescription)
             }
         }

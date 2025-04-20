@@ -124,7 +124,14 @@ struct QuestionView: View {
                     .padding(.horizontal, 40)
                 }
                 .scenePadding()
-                .animation(.spring, value: isShowingAnswer)
+                .animation(
+                    .spring(
+                        response: 0.45,
+                        dampingFraction: 0.75,
+                        blendDuration: 0.2
+                    ),
+                    value: showNextButton
+                )
             }
             .onChange(of: questionStage) { oldValue, newValue in
                 guard mode == .play, case .showAnswer = questionStage else {
