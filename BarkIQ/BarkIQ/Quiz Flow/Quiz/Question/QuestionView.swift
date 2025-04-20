@@ -18,6 +18,10 @@ struct QuestionView: View {
         case play
     }
     
+    enum ScrollTarget: Hashable {
+        case nextButton
+    }
+    
     @Environment(\.quizActions)
     private var quizActions
     
@@ -29,6 +33,9 @@ struct QuestionView: View {
     
     @State
     private var confirmationAlert: ConfirmationDialogModel?
+    
+    @State
+    private var shouldScrollToNext = false
     
     private var isShowingAnswer: Bool {
         guard case .showAnswer = questionStage else {
@@ -87,46 +94,65 @@ struct QuestionView: View {
     }
     
     var body: some View {
-        ScrollingContentView { geometry in
-            VStack(spacing: questionTextSpacing) {
-                BarkImageView(url: question.imageUrl)
-                    .frame(height: geometry.size.height * 0.35)
-                    .frame(maxWidth: .infinity)
-                
+        ScrollViewReader { proxy in
+            ScrollingContentView { geometry in
                 VStack(spacing: questionTextSpacing) {
-                    Text(question.questionText)
-                        .font(.system(.body, design: .monospaced).bold())
+                    BarkImageView(url: question.imageUrl)
+                        .frame(height: geometry.size.height * 0.35)
+                        .frame(maxWidth: .infinity)
                     
-                    VStack(spacing: 48) {
-                        AnswerPicker(
-                            questionStage: $questionStage,
-                            question: question
-                        )
+                    VStack(spacing: questionTextSpacing) {
+                        Text(question.questionText)
+                            .font(.system(.body, design: .monospaced).bold())
                         
-                        if showNextButton {
-                            LoadingButton(nextButtonText) {
-                                await quizActions.next()
+                        VStack(spacing: 48) {
+                            AnswerPicker(
+                                questionStage: $questionStage,
+                                question: question
+                            )
+                            
+                            if showNextButton {
+                                LoadingButton(nextButtonText) {
+                                    await quizActions.next()
+                                }
+                                .buttonStyle(.primary)
+                                .transition(.slide)
+                                .id(ScrollTarget.nextButton)
                             }
-                            .buttonStyle(.primary)
-                            .transition(.slide)
                         }
                     }
+                    .padding(.horizontal, 40)
                 }
-                .padding(.horizontal, 40)
+                .scenePadding()
+                .animation(.spring, value: isShowingAnswer)
             }
-            .scenePadding()
-            .animation(.spring, value: isShowingAnswer)
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-               exitButton
+            .onChange(of: questionStage) { oldValue, newValue in
+                guard mode == .play, case .showAnswer = questionStage else {
+                    return
+                }
+                
+                shouldScrollToNext = true
             }
+            .onChange(of: shouldScrollToNext) { _, shouldScroll in
+                if shouldScroll {
+                    withAnimation(.default, completionCriteria: .logicallyComplete) {
+                        proxy.scrollTo(ScrollTarget.nextButton, anchor: .bottom)
+                    } completion: {
+                        shouldScrollToNext = false
+                    }
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    exitButton
+                }
+            }
+            .background(backgroundColor)
+            .navigationBarBackButtonHidden(mode == .play)
+            .navigationTitle(titleText)
+            .navigationBarTitleDisplayMode(.large)
+            .confirmationDialog($confirmationAlert)
         }
-        .background(backgroundColor)
-        .navigationBarBackButtonHidden(mode == .play)
-        .navigationTitle(titleText)
-        .navigationBarTitleDisplayMode(.large)
-        .confirmationDialog($confirmationAlert)
     }
     
     private var exitButton: some View {
