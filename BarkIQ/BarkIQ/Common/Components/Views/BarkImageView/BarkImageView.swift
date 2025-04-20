@@ -80,7 +80,7 @@ struct BarkImageView<Placeholder: View>: View {
         do {
             let data = try await imageDataLoader.fetchImageData(url)
             
-            
+            // TODO: Add comments
             if let image = Image(data: data) {
                 withAnimation(.spring) {
                     phase = .loaded(image)

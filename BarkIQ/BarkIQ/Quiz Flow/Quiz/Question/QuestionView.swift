@@ -30,7 +30,7 @@ struct QuestionView: View {
     private var backgroundColor: Color {
         switch questionStage {
         case .showAnswer(let isCorrect):
-            return (isCorrect ? Color.green : Color.red).opacity(0.15)
+            return (isCorrect ? Color.green : Color.red).opacity(0.18)
         default:
             return .barkBackground
         }
