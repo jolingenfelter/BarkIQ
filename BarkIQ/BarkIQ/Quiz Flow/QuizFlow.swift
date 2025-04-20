@@ -23,6 +23,16 @@ struct QuizFlow: View {
     @State
     private var quizController: QuizController
     
+    private var disablesSwipeDown: Bool {
+        if let top = navigationPath.last {
+            if case .quiz = top {
+                return true
+            }
+        }
+       
+        return false
+    }
+    
     init(apiClient: DogApiClient) {
         _quizController = State(wrappedValue: QuizController(apiClient: apiClient))
     }
@@ -74,6 +84,7 @@ struct QuizFlow: View {
                         )
                     }
                 }
+                .interactiveDismissDisabled(disablesSwipeDown)
         }
         .environment(\.quizActions, quizActions)
     }

@@ -17,15 +17,19 @@ struct ResultsView: View {
         self.results = results
     }
     
-    var titleText: String {
+    var scoreText: String {
         let correctCount = results.filter(\.isCorrect).count
         let total = results.count
         
-        return "Score \(correctCount)/\(total)"
+        return "\(correctCount)/\(total)"
     }
     
     var body: some View {
         Form {
+            Text("You got ") +
+            Text(scoreText).bold() +
+            Text(" correct!")
+            
             Section {
                 ForEach(results, id: \.self) { result in
                     NavigationLink {
@@ -46,7 +50,7 @@ struct ResultsView: View {
                 .padding(.top, 28)
             }
         }
-        .navigationTitle(titleText)
+        .navigationTitle("Score")
         .navigationBarBackButtonHidden()
     }
 }

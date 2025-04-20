@@ -106,7 +106,6 @@ struct QuestionView: View {
         }
         .background(backgroundColor)
         .navigationBarBackButtonHidden(mode == .play)
-        .interactiveDismissDisabled()
         .navigationTitle(question.location.displayText)
         .navigationBarTitleDisplayMode(.large)
         .confirmationDialog($confirmationAlert)
