@@ -22,15 +22,12 @@ final class QuizController {
 
     private var currentQuestionNumber: Int = 0
     
-    private let settings: QuizSettings
+    var settings = QuizSettings()
     private let apiClient: DogApiClient
     
     private(set) var currentState: QuizState = .loading
 
-    init(settings: QuizSettings,
-         apiClient: DogApiClient
-    ) {
-        self.settings = settings
+    init(apiClient: DogApiClient) {
         self.apiClient = apiClient
     }
     
@@ -48,6 +45,17 @@ final class QuizController {
         }
         
         return "\(currentQuestionNumber)/\(settings.questionCount)"
+    }
+    
+    func startQuiz() async {
+        do {
+            let breeds = try await apiClient.fetchBreeds()
+            self.settings.breeds = breeds
+            
+            await next()
+        } catch {
+            self.currentState = .error(error.localizedDescription)
+        }
     }
     
     func next() async {

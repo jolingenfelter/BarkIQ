@@ -8,14 +8,11 @@
 import SwiftUI
 
 struct QuizSetupView: View {
-    @Environment(\.dogApiClient)
-    private var apiClient
-    
     @State private var isShowingQuestion: Bool = false
-    @State private var settings = QuizSettings()
     @State private var error: AlertModel?
     
-    let startQuizAction: (QuizSettings) -> Void
+    @Binding var settings: QuizSettings
+    let startQuizAction: () async -> Void
     let dismissAction: () -> Void
     
     var body: some View {
@@ -30,12 +27,7 @@ struct QuizSetupView: View {
                 .pickerStyle(.menu)
             } footer: {
                 LoadingButton("Start Quiz!") {
-                    do {
-                        settings.breeds = try await apiClient.fetchBreeds()
-                        startQuizAction(settings)
-                    } catch {
-                        self.error = errorAlert(error)
-                    }
+                    await startQuizAction()
                 }
                 .buttonStyle(.primary)
                 .padding(.top, 28)
@@ -61,7 +53,8 @@ struct QuizSetupView: View {
 
 #Preview {
     QuizSetupView(
-        startQuizAction: { _ in },
+        settings: .constant(.mock),
+        startQuizAction: {},
         dismissAction: {}
     )
 }

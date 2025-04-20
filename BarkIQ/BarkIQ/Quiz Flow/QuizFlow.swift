@@ -9,44 +9,62 @@ import SwiftUI
 
 struct QuizFlow: View {
     private enum Stage: Hashable {
-        case quiz(QuizSettings)
+        case quiz(Question)
         case results
+        case error(String)
     }
-    
-    @Environment(\.dogApiClient)
-    private var apiClient
     
     @Environment(\.dismiss)
     private var dismiss
     
     @State
     private var navigationPath: [Stage] = []
+    
+    @State
+    private var quizController: QuizController
+    
+    init(apiClient: DogApiClient) {
+        _quizController = State(wrappedValue: QuizController(apiClient: apiClient))
+    }
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
             QuizSetupView(
-                startQuizAction: { settings in
-                    navigationPath.append(.quiz(settings))
+                settings: $quizController.settings,
+                startQuizAction: {
+                    await quizController.startQuiz()
                 },
                 dismissAction: {
                     dismiss()
                 }
             )
+            .onChange(of: quizController.currentState) { oldValue, newValue in
+                switch newValue {
+                case .error(let error):
+                    navigationPath.append(.error(error))
+                case .question(let question):
+                    navigationPath.append(.quiz(question))
+                case .results:
+                    navigationPath.append(.results)
+                default:
+                    break
+                }
+            }
             .navigationDestination(for: Stage.self) { stage in
                 switch stage {
-                case .quiz(let settings):
-                    QuizView(
-                        settings: settings,
-                        apiClient: apiClient,
-                        showResults: {
-                            navigationPath.append(.results)
-                        },
-                        quitAction: {
-                            dismiss()
-                        }
+                case .quiz(let question):
+                    QuestionView(
+                        question: question,
+                        answerAction: quizController.checkAnswer(selected:),
+                        nextAction: quizController.next
                     )
                 case .results:
                     ResultsView()
+                case .error(let error):
+                    QuizView.ErrorView(
+                        error: error,
+                        retryAction: quizController.next
+                    )
                 }
             }
         }
@@ -54,6 +72,5 @@ struct QuizFlow: View {
 }
 
 #Preview {
-    QuizFlow()
-        .environment(\.dogApiClient, .mock)
+    QuizFlow(apiClient: .mock)
 }

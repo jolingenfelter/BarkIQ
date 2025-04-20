@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(\.dogApiClient)
+    private var apiClient
+    
     @State private var isShowingSetupSheet = false
     
     var body: some View {
@@ -41,11 +44,12 @@ struct HomeView: View {
         }
         .background(.barkBackground)
         .sheet(isPresented: $isShowingSetupSheet) {
-            QuizFlow()
+            QuizFlow(apiClient: apiClient)
         }
     }
 }
 
 #Preview {
     HomeView()
+        .environment(\.dogApiClient, .mock)
 }

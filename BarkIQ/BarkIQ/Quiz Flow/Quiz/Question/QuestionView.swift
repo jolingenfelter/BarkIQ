@@ -38,7 +38,7 @@ struct QuestionView: View {
     
     let question: Question?
     let answerAction: (Breed) -> Bool
-    let nextAction: () -> Void
+    let nextAction: () async -> Void
     
     var body: some View {
         ScrollingContentView { geometry in
@@ -67,9 +67,8 @@ struct QuestionView: View {
                     // Some sort of "continue" action
                     // to handle ending a quiz
                     if isShowingAnswer {
-                        Button("Next") {
-                            questionStage = .ask
-                            nextAction()
+                        LoadingButton("Next") {
+                            await nextAction()
                         }
                         .buttonStyle(.primary)
                     }
@@ -80,6 +79,11 @@ struct QuestionView: View {
             .animation(.default, value: question)
         }
         .background(backgroundColor)
+        .navigationBarBackButtonHidden()
+        .interactiveDismissDisabled()
+//        .navigationTitle(quizController.progressDisplay)
+        .navigationBarTitleDisplayMode(.large)
+        // .confirmationDialog($confirmationAlert)
     }
 }
 
