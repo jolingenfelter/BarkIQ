@@ -25,13 +25,16 @@ struct BarkImageView<Placeholder: View>: View {
     private var imageDataLoader: ImageDataLoader
     
     let url: URL?
+    let cornerRadius: CGFloat
     let placeholder: () -> Placeholder
     
     init(
         url: URL?,
+        cornerRadius: CGFloat = 12,
         @ViewBuilder placeholder: @escaping () -> Placeholder
     ) {
         self.url = url
+        self.cornerRadius = cornerRadius
         self.placeholder = placeholder
     }
     
@@ -53,7 +56,8 @@ struct BarkImageView<Placeholder: View>: View {
                 }
             }
         }
-        .cornerRadius(12)
+        .transition(.asymmetric(insertion: .scale(scale: 0.98), removal: .opacity))
+        .cornerRadius(cornerRadius)
         .task {
             await fetchImage()
         }
@@ -66,7 +70,6 @@ struct BarkImageView<Placeholder: View>: View {
                 }
             }
         }
-        .animation(.default, value: phase)
     }
     
     private func fetchImage() async {
@@ -77,13 +80,22 @@ struct BarkImageView<Placeholder: View>: View {
         do {
             let data = try await imageDataLoader.fetchImageData(url)
             
+            
             if let image = Image(data: data) {
-                phase = .loaded(image)
+                withAnimation(.spring) {
+                    phase = .loaded(image)
+                }
             } else {
-                phase = .error("Error converting data to image")
+                withAnimation {
+                    phase = .error("Error converting data to image")
+                }
+                
             }
+
         } catch {
-            phase = .error(error.localizedDescription)
+            withAnimation {
+                phase = .error(error.localizedDescription)
+            }
         }
     }
 }

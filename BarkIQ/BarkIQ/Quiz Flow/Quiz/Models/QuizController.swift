@@ -13,10 +13,11 @@ final class QuizController {
         case failedToGenerateQuestion
     }
     
-    enum QuizStep {
-        case question(Question?)
+    enum QuizState: Equatable {
+        case question(Question)
         case error(String)
         case results
+        case loading
     }
 
     private var currentQuestionNumber: Int = 0
@@ -24,7 +25,7 @@ final class QuizController {
     private let settings: QuizSettings
     private let apiClient: DogApiClient
     
-    private(set) var currentStep: QuizStep = .question(nil)
+    private(set) var currentState: QuizState = .loading
 
     init(settings: QuizSettings,
          apiClient: DogApiClient
@@ -34,7 +35,7 @@ final class QuizController {
     }
     
     var currentQuestion: Question? {
-        guard case .question(let question) = currentStep else {
+        guard case .question(let question) = currentState else {
             return nil
         }
         
@@ -42,35 +43,40 @@ final class QuizController {
     }
     
     var progressDisplay: String {
-        "\(currentQuestionNumber)/\(settings.questionCount)"
+        guard case .question = currentState else {
+            return ""
+        }
+        
+        return "\(currentQuestionNumber)/\(settings.questionCount)"
     }
     
     func next() async {
-       guard currentQuestionNumber <= settings.questionCount else {
-           self.currentStep = .results
+       guard currentQuestionNumber < settings.questionCount else {
+           self.currentState = .results
            return
         }
         
-        self.currentStep = .question(nil)
-        currentQuestionNumber += 1
+        self.currentState = .loading
         
         do {
-            let question = try await generateQuestion(number: currentQuestionNumber)
-            self.currentStep = .question(question)
+            let question = try await generateQuestion()
+            currentQuestionNumber += 1
+            
+            self.currentState = .question(question)
         } catch {
-            self.currentStep = .error(error.localizedDescription)
+            self.currentState = .error(error.localizedDescription)
         }
     }
     
     func checkAnswer(selected: Breed) -> Bool {
-        guard case .question(let question) = currentStep else {
+        guard case .question(let question) = currentState else {
             return false
         }
         
-        return question?.answer == selected
+        return question.answer == selected
     }
     
-    private func generateQuestion(number: Int) async throws -> Question {
+    private func generateQuestion() async throws -> Question {
         guard let answer = settings.breeds.randomElement() else {
             throw QuizError.failedToGenerateQuestion
         }
@@ -91,7 +97,6 @@ final class QuizController {
         let choices = (distractors).shuffled()
 
         return Question(
-            number: number,
             imageUrl: imageUrl,
             choices: choices,
             answer: answer

@@ -30,22 +30,31 @@ struct QuizView: View {
     
     var body: some View {
         Group {
-            switch quizController.currentStep {
+            switch quizController.currentState {
             case .question(let question):
                 QuestionView(
                     question: question,
                     answerAction: quizController.checkAnswer(selected:),
-                    nextAction: quizController.next
+                    nextAction: {
+                        Task {
+                            await quizController.next()
+                        }
+                    }
                 )
+                
             case .error(let error):
                 ErrorView(
                     error: error,
                     retryAction: quizController.next
                 )
-            default:
+            case .loading:
                 LoadingView()
+            case .results:
+                ResultsView()
             }
         }
+        .transition(.opacity)
+        .animation(.default, value: quizController.currentState)
         .task {
             await quizController.next()
         }
@@ -59,7 +68,9 @@ struct QuizView: View {
         .navigationBarBackButtonHidden()
         .interactiveDismissDisabled()
         .navigationTitle(quizController.progressDisplay)
+        .navigationBarTitleDisplayMode(.large)
         .confirmationDialog($confirmationAlert)
+        .background(Color.barkBackground)
     }
     
     private func quitConfirmation() -> ConfirmationDialogModel {

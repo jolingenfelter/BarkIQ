@@ -11,20 +11,16 @@ import Foundation
 /// when creating a quiz question, value provided to answer
 /// is automatically added to the choices array.
 struct Question: Hashable, Equatable {
-    let id: UUID = UUID()
-    let number: Int
-    let imageUrl: URL
+    let imageUrl: URL?
     let questionText: String = "What breed is this dog?"
     let choices: [Breed]
     let answer: Breed
     
     init(
-        number: Int,
-        imageUrl: URL,
+        imageUrl: URL?,
         choices: [Breed],
         answer: Breed
     ) {
-        self.number = number
         self.imageUrl = imageUrl
         
         let allChoices  = choices + [answer]
@@ -43,7 +39,6 @@ struct Question: Hashable, Equatable {
         }
         
         return Question(
-            number: 1,
             imageUrl: url,
             choices: breeds.shuffled(),
             answer: answer

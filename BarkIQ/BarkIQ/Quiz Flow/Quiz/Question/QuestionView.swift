@@ -30,7 +30,7 @@ struct QuestionView: View {
     private var backgroundColor: Color {
         switch questionStage {
         case .showAnswer(let isCorrect):
-            return (isCorrect ? Color.green : Color.red).opacity(0.25)
+            return (isCorrect ? Color.green : Color.red).opacity(0.15)
         default:
             return .barkBackground
         }
@@ -38,17 +38,14 @@ struct QuestionView: View {
     
     let question: Question?
     let answerAction: (Breed) -> Bool
-    let nextAction: () async -> Void
+    let nextAction: () -> Void
     
     var body: some View {
         ScrollingContentView { geometry in
             VStack(spacing: questionTextSpacing) {
                 BarkImageView(url: question?.imageUrl)
-                    .frame(
-                        maxWidth: .infinity,
-                        minHeight: geometry.size.height * 0.35,
-                        maxHeight: geometry.size.height * 0.4
-                    )
+                    .frame(height: geometry.size.height * 0.35)
+                    .frame(maxWidth: .infinity)
                 
                 if let question {
                     Text(question.questionText)
@@ -67,13 +64,12 @@ struct QuestionView: View {
                         }
                     }
                     
+                    // Some sort of "continue" action
+                    // to handle ending a quiz
                     if isShowingAnswer {
                         Button("Next") {
                             questionStage = .ask
-                            
-                            Task {
-                                await nextAction()
-                            }
+                            nextAction()
                         }
                         .buttonStyle(.primary)
                     }
@@ -81,6 +77,7 @@ struct QuestionView: View {
             }
             .scenePadding()
             .animation(.default, value: isShowingAnswer)
+            .animation(.default, value: question)
         }
         .background(backgroundColor)
     }

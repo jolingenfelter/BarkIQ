@@ -1,5 +1,5 @@
 //
-//  QuizErrorView.swift
+//  QuizView+ErrorView.swift
 //  BarkIQ
 //
 //  Created by Jo Lingenfelter on 4/19/25.
