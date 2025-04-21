@@ -21,7 +21,7 @@ extension BreedStats {
     ///
     /// - Low confidence is returned if neither high nor medium thresholds are met.
     var confidence: ConfidenceLevel {
-        let greenStreak = streak >= 3
+        let greenStreak = streak >= 5
         let historicGreenStreek = !streakHistory.filter { $0.count >= 3 }.isEmpty
         let greenAccuracy = accuracy >= 0.85
         let greenException = historicGreenStreek && greenAccuracy
