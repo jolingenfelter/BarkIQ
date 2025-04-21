@@ -28,10 +28,10 @@ struct BarkIQButtonStyle: ButtonStyle {
     }
     
     // MARK: - Colors
-
+    
     private func resolveForegroundColor() -> Color {
         if !isEnabled {
-            return Color(white: 0.2)
+            return .barkDisabledForeground
         }
         
         switch highlight {
@@ -54,7 +54,7 @@ struct BarkIQButtonStyle: ButtonStyle {
     private var backgroundFill: Color {
         switch highlight {
         case .none:
-            return isEnabled ? color : Color(white: 0.85)
+            return isEnabled ? color : .barkDisabledBackground
         case .hilightable(let type):
             switch type {
             case .positive:
@@ -79,7 +79,7 @@ private struct PressedEffect: ViewModifier {
 }
 
 extension ButtonStyle where Self == BarkIQButtonStyle {
-   
+    
     /// Uses the app's primary color and standard foreground styling.
     /// This style does not support highlighting states.
     static var primary: Self {
