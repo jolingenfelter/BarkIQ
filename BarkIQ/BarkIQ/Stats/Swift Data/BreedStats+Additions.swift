@@ -31,13 +31,6 @@ extension BreedStats {
         mistakes[date] = breed
     }
     
-    var lastFiveMistakes: [String] {
-        mistakes
-            .sorted { $0.key > $1.key }
-            .prefix(5)
-            .map(\.value)
-    }
-    
     var repetitionCount: Int {
         answerHistory.count
     }
