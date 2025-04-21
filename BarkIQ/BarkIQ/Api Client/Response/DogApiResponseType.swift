@@ -5,7 +5,8 @@
 //  Created by Jo Lingenfelter on 4/13/25.
 //
 
-// TODO: Add documentation to explain why this is necessary
+// Note: This enum acts as a semi-type-erased wrapper to handle Dog API responses where
+// the "message" field can be either a generic type `T` (on success) or a `String` (on error).
 enum DogApiResponseType<T: Codable>: Codable {
     case success(DogApiResponse<T>)
     case error(DogApiResponse<String>)
