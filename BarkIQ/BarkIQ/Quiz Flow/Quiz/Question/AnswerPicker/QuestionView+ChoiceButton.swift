@@ -9,10 +9,12 @@ import SwiftUI
 
 extension QuestionView {
     struct ChoiceButton: View {
+        @Environment(\.quizFlowActions.recordAnswer)
+        private var recordAnswer
+        
         let choice: Breed
         let question: Question
-        let questionStage: QuestionStage
-        let action: () -> Void
+        @Binding var questionStage: QuestionStage
         
         private var highlight: HighlightBehavior {
             if case .showAnswer(let result) = questionStage {
@@ -39,20 +41,65 @@ extension QuestionView {
         }
         
         var body: some View {
-            Button(choice.displayName, action: action)
-                .buttonStyle(.quiz(highlight))
-                .disabled(questionStage != .ask)
-                .accessibilityLabel(accessibilityLabel)
+            Button(choice.displayName) {
+                guard let result = recordAnswer(question, choice) else {
+                    return
+                }
+                
+                questionStage = .showAnswer(result)
+            }
+            .buttonStyle(.quiz(highlight))
+            .disabled(questionStage != .ask)
+            .accessibilityLabel(accessibilityLabel)
         }
     }
 }
 
-#Preview {
-    QuestionView
-        .ChoiceButton(
-            choice: .mock1,
-            question: .mock(),
-            questionStage: .showAnswer(QuestionResult(question: .mock(), selectedAnswer: .mock3)),
-            action: {}
+private struct ChoiceButtonPreview: View {
+    @State var questionStage: QuestionView.QuestionStage = .ask
+    
+    let question = Question.mock()
+    
+    var quizFlowActions: QuizFlowActions {
+        QuizFlowActions(
+            next: {},
+            recordAnswer: { question, breed in
+                return QuestionResult(
+                    question: question,
+                    selectedAnswer: breed
+                )
+            },
+            quit: {},
+            restart: {}
         )
+    }
+    
+    var body: some View {
+        NavigationStack {
+            // Pass in .mock1 to see it highlight
+            // for the right answer and .mock2
+            // for the wrong answer
+            QuestionView
+                .ChoiceButton(
+                    choice: .mock2,
+                    question: .mock(),
+                    questionStage: $questionStage
+                )
+                .scenePadding()
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Reset") {
+                            questionStage = .ask
+                        }
+                    }
+                }
+            
+        }
+        .environment(\.quizFlowActions, quizFlowActions)
+        
+    }
+}
+
+#Preview {
+    ChoiceButtonPreview()
 }

@@ -24,26 +24,59 @@ extension QuestionView {
         
         var body: some View {
             VStack(alignment: .leading, spacing: 16) {
-                ForEach(question.choices) { choice in
+                ForEach(Array(question.choices.enumerated()), id: \.element) { index, choice in
                     ChoiceButton(
                         choice: choice,
                         question: question,
-                        questionStage: questionStage,
-                        action: {
-                            guard let result = quizFlowActions.recordAnswer(question, choice) else { return }
-                            questionStage = .showAnswer(result)
-                        }
+                        questionStage: $questionStage
                     )
+                    .accessibilityIdentifier("quiz-choice-button-\(index)")
                 }
             }
         }
     }
 }
 
+private struct AnswerPickerPreview: View {
+    @State var questionStage: QuestionView.QuestionStage = .ask
+    
+    let question = Question.mock()
+    
+    var quizFlowActions: QuizFlowActions {
+        QuizFlowActions(
+            next: {},
+            recordAnswer: { question, breed in
+                return QuestionResult(
+                    question: question,
+                    selectedAnswer: breed
+                )
+            },
+            quit: {},
+            restart: {}
+        )
+    }
+    
+    var body: some View {
+        NavigationStack {
+            QuestionView.AnswerPicker(
+                questionStage: $questionStage,
+                question: question
+            )
+            .scenePadding()
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Reset") {
+                        questionStage = .ask
+                    }
+                }
+            }
+            
+        }
+        .environment(\.quizFlowActions, quizFlowActions)
+        
+    }
+}
 
 #Preview {
-    QuestionView.AnswerPicker(
-        questionStage: .constant(.showAnswer(QuestionResult(question: .mock(), selectedAnswer: .mock3))),
-        question: .mock()
-    )
+    AnswerPickerPreview()
 }

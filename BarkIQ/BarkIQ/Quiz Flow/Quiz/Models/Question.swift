@@ -56,7 +56,7 @@ struct Question: Hashable, Equatable, CustomStringConvertible {
     var description: String {
         """
         Question {
-            location: \(location),
+            location: \(location.displayText),
             imageUrl: \(imageUrl.absoluteString),
             questionText: \(questionText),
             choices: \(choices.map(\.displayName).joined(separator: ", "))

@@ -71,6 +71,10 @@ struct QuestionView: View {
         question.location.isAtEnd ? "See results" : "Next"
     }
     
+    private var nextButtonIdentifier: String {
+        question.location.isAtEnd ? "see-results-button" : "next-question-button"
+    }
+    
     private let mode: Mode
     
     let question: Question
@@ -118,6 +122,7 @@ struct QuestionView: View {
                                 .buttonStyle(.primary)
                                 .transition(.slide)
                                 .id(ScrollTarget.nextButton)
+                                .accessibilityIdentifier(nextButtonIdentifier)
                             }
                         }
                     }

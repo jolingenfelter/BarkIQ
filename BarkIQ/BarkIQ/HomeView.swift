@@ -29,11 +29,13 @@ struct HomeView: View {
                                 isShowingSetupSheet = true
                             }
                             .buttonStyle(.primary)
+                            .accessibilityIdentifier("quiz-me-button")
                             
                             NavigationLink("Stats") {
                                 BreedStatsListView()
                             }
                             .buttonStyle(.primary)
+                            .accessibilityIdentifier("stats-button")
                         }
                     }
                     .scenePadding()

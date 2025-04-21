@@ -77,9 +77,10 @@ struct ResultsView: View {
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Done") {
+                Button("Close") {
                     quit()
                 }
+                .accessibilityIdentifier("close-button")
             }
         }
         .navigationTitle("Score")

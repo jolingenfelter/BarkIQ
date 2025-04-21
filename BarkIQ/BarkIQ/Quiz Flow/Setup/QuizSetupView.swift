@@ -26,6 +26,7 @@ struct QuizSetupView: View {
                     }
                 }
                 .pickerStyle(.menu)
+                .accessibilityIdentifier("question-count-picker")
             } footer: {
                 LoadingButton("Start Quiz!") {
                     await quizFlowActions.next()

@@ -92,11 +92,8 @@ struct QuizFlow: View {
                     case .results(let results):
                         ResultsView(results: results)
                     case .error(let error):
-                        QuizFlowErrorView(
-                            error: error,
-                            retryAction: quizController.next
-                        )
-                        .navigationBarBackButtonHidden()
+                        QuizFlowErrorView(error: error)
+                            .navigationBarBackButtonHidden()
                     }
                 }
                 .interactiveDismissDisabled(disablesSwipeDown)
