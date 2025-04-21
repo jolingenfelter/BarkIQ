@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct BreedStatsListView: View {
-    @Query(sort: [SortDescriptor(\BreedStats.name)]) var stats: [BreedStats]
+    @Query(sort: [SortDescriptor(\BreedStats.displayName)]) var stats: [BreedStats]
     
     var body: some View {
         Group {
