@@ -38,8 +38,9 @@ struct ResultsView: View {
     }
     
     var body: some View {
-        // I was having trouble getting the fotter of a list to do
-        // what I wanted it to do here, so I used a Form instead
+        // Some challenges getting the footer of a list to do what I what
+        // I wanted so I used a form.  Need to do more testing with the
+        // List component.
         Form {
             Group {
                 Text("You got ") +
@@ -66,7 +67,7 @@ struct ResultsView: View {
                 }
             } footer: {
                 LoadingButton("Take another quiz!") {
-                   restart()
+                   restart?()
                 }
                 .buttonStyle(.primary)
                 .padding(.top, 28)
@@ -78,7 +79,7 @@ struct ResultsView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Close") {
-                    quit()
+                    quit?()
                 }
                 .accessibilityIdentifier("close-button")
             }

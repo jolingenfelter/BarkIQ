@@ -42,20 +42,6 @@ private struct AnswerPickerPreview: View {
     
     let question = Question.mock()
     
-    var quizFlowActions: QuizFlowActions {
-        QuizFlowActions(
-            next: {},
-            recordAnswer: { question, breed in
-                return QuestionResult(
-                    question: question,
-                    selectedAnswer: breed
-                )
-            },
-            quit: {},
-            restart: {}
-        )
-    }
-    
     var body: some View {
         NavigationStack {
             QuestionView.AnswerPicker(
@@ -72,8 +58,7 @@ private struct AnswerPickerPreview: View {
             }
             
         }
-        .environment(\.quizFlowActions, quizFlowActions)
-        
+        .environment(\.quizFlowActions, .mock)
     }
 }
 

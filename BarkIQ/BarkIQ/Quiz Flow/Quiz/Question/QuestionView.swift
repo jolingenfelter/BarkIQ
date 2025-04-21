@@ -117,7 +117,7 @@ struct QuestionView: View {
                             
                             if showNextButton {
                                 LoadingButton(nextButtonText) {
-                                    await quizFlowActions.next()
+                                    await quizFlowActions.next?()
                                 }
                                 .buttonStyle(.primary)
                                 .transition(.slide)
@@ -180,7 +180,7 @@ struct QuestionView: View {
         switch mode {
         case .review:
             Button("Close") {
-                quizFlowActions.quit()
+                quizFlowActions.quit?()
             }
         case .play:
             Button("Quit") {
@@ -193,7 +193,9 @@ struct QuestionView: View {
         let action = ConfirmationDialogModel.Action(
             "Quit now",
             role: .destructive,
-            action: quizFlowActions.quit
+            action: {
+                quizFlowActions.quit?()
+            }
         )
         
         let model = ConfirmationDialogModel(

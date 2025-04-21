@@ -14,6 +14,7 @@ extension QuestionView {
         
         let choice: Breed
         let question: Question
+        
         @Binding var questionStage: QuestionStage
         
         private var highlight: HighlightBehavior {
@@ -42,11 +43,9 @@ extension QuestionView {
         
         var body: some View {
             Button(choice.displayName) {
-                guard let result = recordAnswer(question, choice) else {
-                    return
+                if let result = recordAnswer?(question, choice) {
+                    questionStage = .showAnswer(result)
                 }
-                
-                questionStage = .showAnswer(result)
             }
             .buttonStyle(.quiz(highlight))
             .disabled(questionStage != .ask)
@@ -59,21 +58,7 @@ private struct ChoiceButtonPreview: View {
     @State var questionStage: QuestionView.QuestionStage = .ask
     
     let question = Question.mock()
-    
-    var quizFlowActions: QuizFlowActions {
-        QuizFlowActions(
-            next: {},
-            recordAnswer: { question, breed in
-                return QuestionResult(
-                    question: question,
-                    selectedAnswer: breed
-                )
-            },
-            quit: {},
-            restart: {}
-        )
-    }
-    
+
     var body: some View {
         NavigationStack {
             // Pass in .mock1 to see it highlight
@@ -95,8 +80,7 @@ private struct ChoiceButtonPreview: View {
                 }
             
         }
-        .environment(\.quizFlowActions, quizFlowActions)
-        
+        .environment(\.quizFlowActions, .mock)
     }
 }
 

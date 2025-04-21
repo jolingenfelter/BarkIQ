@@ -8,12 +8,5 @@
 import SwiftUI
 
 extension EnvironmentValues {
-    @Entry var quizFlowActions: QuizFlowActions = QuizFlowActions(
-        next: {},
-        recordAnswer: { _, _ in
-            return nil
-        },
-        quit: {},
-        restart: {}
-    )
+    @Entry var quizFlowActions = QuizFlowActions()
 }

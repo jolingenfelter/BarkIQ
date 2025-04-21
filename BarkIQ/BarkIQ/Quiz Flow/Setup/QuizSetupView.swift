@@ -29,7 +29,7 @@ struct QuizSetupView: View {
                 .accessibilityIdentifier("question-count-picker")
             } footer: {
                 LoadingButton("Start Quiz!") {
-                    await quizFlowActions.next()
+                    await quizFlowActions.next?()
                 }
                 .buttonStyle(.primary)
                 .padding(.top, 28)
@@ -40,7 +40,7 @@ struct QuizSetupView: View {
     
     private func errorAlert(_ error: Error) -> AlertModel {
         let okAction = AlertModel.Action.ok {
-            quizFlowActions.quit()
+            quizFlowActions.quit?()
         }
         
         let alert = AlertModel(
@@ -55,4 +55,5 @@ struct QuizSetupView: View {
 
 #Preview {
     QuizSetupView(settings: .constant(.mock))
+        .environment(\.quizFlowActions, .mock)
 }

@@ -9,8 +9,20 @@
 /// (like question screens or results) can trigger side effects without needing
 /// direct access to the `QuizController`. 
 struct QuizFlowActions {
-    var next: () async -> Void
-    var recordAnswer: (_ question: Question, _ selected: Breed) -> QuestionResult?
-    var quit: () -> Void
-    var restart: () -> Void
+    var next: (() async -> Void)?
+    var recordAnswer: ((_ question: Question, _ selected: Breed) -> QuestionResult)?
+    var quit: (() -> Void)?
+    var restart: (() -> Void)?
+    
+    static let mock = QuizFlowActions(
+        next: {
+            try? await Task.sleep(for: .seconds(2))
+        },
+        recordAnswer: { question, selection in
+            QuestionResult(
+                question: question,
+                selectedAnswer: selection
+            )
+        }
+    )
 }

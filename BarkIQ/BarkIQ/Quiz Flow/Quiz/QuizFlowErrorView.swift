@@ -20,7 +20,10 @@ struct QuizFlowErrorView: View {
         ScrollingContentView { geometry in
             VStack(spacing: verticalSpacing) {
                 Text(error)
-                RetryButton(retryAction: quizFlowActions.next)
+                
+                if let retryAction = quizFlowActions.next {
+                    RetryButton(retryAction: retryAction)
+                }
             }
             .frame(
                 maxWidth: .infinity,
@@ -32,7 +35,7 @@ struct QuizFlowErrorView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Close") {
-                    quizFlowActions.quit()
+                    quizFlowActions.quit?()
                 }
             }
         }
@@ -41,8 +44,6 @@ struct QuizFlowErrorView: View {
 
 #Preview {
     QuizFlowErrorView(error: "An unknown error occured")
-        .environment(\.quizFlowActions, QuizFlowActions(next: {
-            try? await Task.sleep(for: .seconds(2))
-        }, recordAnswer: {_, _ in return .mock1 }, quit: {}, restart: {}))
+        .environment(\.quizFlowActions, .mock)
     
 }
