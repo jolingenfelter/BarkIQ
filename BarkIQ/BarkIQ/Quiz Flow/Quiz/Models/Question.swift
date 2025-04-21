@@ -11,6 +11,7 @@ import Foundation
 /// when creating a quiz question, value provided to answer
 /// is automatically added to the choices array.
 struct Question: Hashable, Equatable, CustomStringConvertible {
+    let uuid = UUID()
     let location: QuizLocation
     let imageUrl: URL
     let questionText: String = "What breed is this dog?"

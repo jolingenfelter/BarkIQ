@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 /// A lightweight dependency that defines how image data should be fetched for a given URL.
 ///
@@ -22,7 +23,10 @@ struct ImageDataLoader {
         // Use `.ephemeral` to avoid persistent connection
         // issues (e.g. QUIC errors from dog.ceo API)
         let session = URLSession(configuration: .ephemeral)
+        
+        Logger.imageLoading.info("⌛️ Loading image data for \(url)")
         let (data, _) = try await session.data(for: request)
+        Logger.imageLoading.info("🌠 Received image data from \(url)")
         return data
     }
     
