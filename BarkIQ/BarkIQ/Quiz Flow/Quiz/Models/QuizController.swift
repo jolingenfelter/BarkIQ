@@ -28,8 +28,9 @@ import SwiftUI
 /// It’s designed to produce and advance quiz state, not hold onto long-term identity or deep view model logic.
 @Observable
 final class QuizController {
-    enum QuizError: Error {
+    enum Error: Swift.Error {
         case failedToGenerateQuestion
+        case failedToFetchBreeds
     }
     
     enum QuizState: Equatable {
@@ -37,11 +38,12 @@ final class QuizController {
         case error(String)
         case results([QuestionResult])
         case loading
+        case initial
     }
 
-    private var currentQuestionNumber: Int = 1
+    private(set) var currentQuestionNumber: Int = 1
     
-    private(set) var currentState: QuizState = .loading
+    private(set) var currentState: QuizState = .initial
     
     private var results: [QuestionResult] = []
     
@@ -54,13 +56,20 @@ final class QuizController {
     
     private func fetchBreedsIfNeeded() async throws {
         if settings.breeds.isEmpty {
-            settings.breeds = try await apiClient.fetchBreeds()
+            let breeds = try await apiClient.fetchBreeds()
+            
+            guard !breeds.isEmpty else {
+                throw Error.failedToFetchBreeds
+            }
+            
+            settings.breeds = breeds
         }
     }
     
     func reset() {
         self.currentQuestionNumber = 1
         self.results.removeAll()
+        self.currentState = .initial
         Logger.quizController.info("Reset quiz controller")
     }
     
@@ -76,7 +85,7 @@ final class QuizController {
         do {
             try await fetchBreedsIfNeeded()
             
-            let question = try await generateQuestion(title: "\(currentQuestionNumber)/\(settings.questionCount)")
+            let question = try await generateQuestion()
             
             self.currentState = .question(question)
             Logger.quizController.info("Update state to .question: \(String(describing: question), privacy: .public)")
@@ -98,9 +107,9 @@ final class QuizController {
         return result
     }
     
-    private func generateQuestion(title: String) async throws -> Question {
+    private func generateQuestion() async throws -> Question {
         guard let answer = settings.breeds.randomElement() else {
-            throw QuizError.failedToGenerateQuestion
+            throw Error.failedToGenerateQuestion
         }
 
         let imageUrl = try await apiClient.fetchImageUrl(answer)
@@ -111,7 +120,7 @@ final class QuizController {
         let otherBreeds = settings.breeds.filter { $0 != answer }.shuffled()
 
         guard otherBreeds.count >= numberOfChoices - 1 else {
-            throw QuizError.failedToGenerateQuestion
+            throw Error.failedToGenerateQuestion
         }
 
         let distractors = Array(otherBreeds.prefix(numberOfChoices - 1))

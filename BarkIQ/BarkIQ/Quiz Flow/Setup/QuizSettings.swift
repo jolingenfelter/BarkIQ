@@ -17,7 +17,7 @@ struct QuizSettings: Hashable, Equatable {
     }
     
     // Used for mocking
-    init(questionCount: Int, breeds: [Breed]) {
+    init(questionCount: Int, breeds: [Breed] = []) {
         self.questionCount = questionCount
         self.breeds = breeds
     }
