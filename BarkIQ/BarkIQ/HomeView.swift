@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
     @Environment(\.dogApiClient)
@@ -52,6 +53,21 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
-        .environment(\.dogApiClient, .mock)
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+
+    let container = try! ModelContainer(
+        for: BreedStats.self,
+        configurations: config
+    )
+    let context = ModelContext(container)
+    
+    for stats in BreedStats.mockCollection {
+        context.insert(stats)
+    }
+    
+    return NavigationStack {
+        HomeView()
+    }
+    .environment(\.dogApiClient, .mock)
+    .modelContext(context)
 }

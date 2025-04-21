@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-private struct QuizActionsKey: EnvironmentKey {
-    static let defaultValue = QuizActions(
+private struct QuizFlowActionsKey: EnvironmentKey {
+    static let defaultValue = QuizFlowActions(
         next: {},
         recordAnswer: { _, _ in
             return nil
@@ -19,8 +19,8 @@ private struct QuizActionsKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    var quizActions: QuizActions {
-        get { self[QuizActionsKey.self] }
-        set { self[QuizActionsKey.self] = newValue }
+    var quizActions: QuizFlowActions {
+        get { self[QuizFlowActionsKey.self] }
+        set { self[QuizFlowActionsKey.self] = newValue }
     }
 }

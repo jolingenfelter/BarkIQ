@@ -47,8 +47,8 @@ struct QuizFlow: View {
         _quizController = State(wrappedValue: QuizController(apiClient: apiClient))
     }
     
-    private var quizActions: QuizActions {
-        QuizActions(
+    private var quizActions: QuizFlowActions {
+        QuizFlowActions(
             next: quizController.next,
             recordAnswer: { question, selected in
                 quizController.checkAnswer(

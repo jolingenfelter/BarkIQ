@@ -47,7 +47,8 @@ extension BreedStats {
             breed: .mock1,
             streak: 0,
             streakHistory: [[.now]],
-            answerHistory: [.now : false]
+            answerHistory: [.now : false],
+            mistakes: [.now: "Boxer"]
         )
     
     static let mockLowConfidence2: BreedStats =
@@ -55,7 +56,8 @@ extension BreedStats {
             breed: .mock2,
             streak: 0,
             streakHistory: [[.now]],
-            answerHistory: [.now : false]
+            answerHistory: [.now : false],
+            mistakes: [.now: "Boxer"]
         )
     
     
@@ -68,7 +70,8 @@ extension BreedStats {
         answerHistory: [
             .now.addingTimeInterval(-700): false,
             .now.addingTimeInterval(-400): true
-        ]
+        ],
+        mistakes: [.now: "Boxer"]
     )
     
     static let mockMediumConfidence2 = BreedStats(
@@ -79,7 +82,8 @@ extension BreedStats {
             .now.addingTimeInterval(-900): false,
             .now.addingTimeInterval(-600): true,
             .now.addingTimeInterval(-300): true
-        ]
+        ],
+        mistakes: [.now: "Boxer"]
     )
     
     // MARK: - High Confidence
@@ -100,7 +104,8 @@ extension BreedStats {
             .now.addingTimeInterval(-3000): true,
             .now.addingTimeInterval(-2000): true,
             .now.addingTimeInterval(-1000): true
-        ]
+        ],
+        mistakes: [.now: "Boxer"]
     )
     
     static let mockHighConfidence2 = BreedStats(
@@ -113,7 +118,8 @@ extension BreedStats {
             .now.addingTimeInterval(-1000): true,
             .now.addingTimeInterval(-500): true,
             .now: true
-        ]
+        ],
+        mistakes: [.now: "Boxer"]
     )
     
     // MARK: - Full Collection
