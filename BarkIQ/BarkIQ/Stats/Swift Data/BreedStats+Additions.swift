@@ -25,9 +25,17 @@ extension BreedStats {
         answerHistory[date] = true
     }
 
-    func incorrectResponse(date: Date = .now) {
+    func appendIncorrectResponse(mistakenFor breed: String, date: Date = .now) {
         streak = 0
         answerHistory[date] = false
+        mistakes[date] = breed
+    }
+    
+    var lastFiveMistakes: [String] {
+        mistakes
+            .sorted { $0.key > $1.key }
+            .prefix(5)
+            .map(\.value)
     }
     
     var repetitionCount: Int {

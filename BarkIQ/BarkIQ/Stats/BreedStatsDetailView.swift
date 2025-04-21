@@ -68,6 +68,15 @@ struct BreedStatsDetailView: View {
                         title: "Last incorrect",
                         content: lastInCorrectDate.formatted(date: .abbreviated, time: .shortened))
                 }
+                
+                NavigationLink {
+                    MistakesListView(
+                        breedName: stats.displayName,
+                        mistakesHistory: stats.mistakes
+                    )
+                } label: {
+                    row(title: "Mistaken for", content: nil)
+                }
             }
         }
         .navigationTitle("\(stats.displayName)")
@@ -78,7 +87,7 @@ struct BreedStatsDetailView: View {
         ViewThatFits {
             HStack {
                 Text(title)
-                Spacer()
+                Spacer(minLength: 8)
 
                 if let content {
                     Text(content)
@@ -88,7 +97,7 @@ struct BreedStatsDetailView: View {
             
             VStack(alignment: .leading) {
                 Text(title)
-                Spacer()
+                Spacer(minLength: verticalPadding)
 
                 if let content {
                     Text(content)

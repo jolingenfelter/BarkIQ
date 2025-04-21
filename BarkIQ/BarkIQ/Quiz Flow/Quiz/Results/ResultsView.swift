@@ -81,14 +81,6 @@ struct ResultsView: View {
         .navigationBarTitleDisplayMode(.large)
     }
     
-    private func updateStats(_ stats: BreedStats, for result: QuestionResult) {
-        if result.isCorrect {
-            stats.appendCorrectResponse()
-        } else {
-            stats.incorrectResponse()
-        }
-    }
-    
     private func persistStats(from results: [QuestionResult], in context: ModelContext) {
         for result in results {
             let breedName = result.question.answer.name
@@ -96,10 +88,10 @@ struct ResultsView: View {
             let descriptor = FetchDescriptor<BreedStats>(predicate: #Predicate { $0.name == breedName })
 
             if let existing = try? context.fetch(descriptor).first {
-                updateStats(existing, for: result)
+                existing.update(for: result)
             } else {
                 let newStats = BreedStats(breed: result.question.answer)
-                updateStats(newStats, for: result)
+                newStats.update(for: result)
                 context.insert(newStats)
             }
         }

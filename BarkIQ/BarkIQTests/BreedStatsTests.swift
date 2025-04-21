@@ -25,7 +25,7 @@ struct BreedStatsTests {
         let stats = BreedStats(breed: .mock1)
         stats.appendCorrectResponse()
         stats.appendCorrectResponse()
-        stats.incorrectResponse()
+        stats.appendIncorrectResponse(mistakenFor: Breed.mock1.displayName)
         
         #expect(stats.streak == 0, "Expected streak to reset to 0, but got \(stats.streak) instead")
         #expect(stats.answerHistory.count == 3, "Expected an answer history with 3 entries, but found \(stats.answerHistory.count) instead.")
@@ -39,7 +39,7 @@ struct BreedStatsTests {
         stats.appendCorrectResponse()
         stats.appendCorrectResponse()
         stats.appendCorrectResponse()
-        stats.incorrectResponse()
+        stats.appendIncorrectResponse(mistakenFor: Breed.mock1.displayName)
         
         // Accuracy: 3/4 = 0.75 with a broken streak
         #expect(stats.confidence == .medium, "Expected medium confidence but got \(stats.confidence.rawValue) instead.")
@@ -48,8 +48,8 @@ struct BreedStatsTests {
     
     @Test func testLowConfidenceWhenMostlyIncorrect() {
         let stats = BreedStats(breed: .mock1)
-        stats.incorrectResponse()
-        stats.incorrectResponse()
+        stats.appendIncorrectResponse(mistakenFor: Breed.mock1.displayName)
+        stats.appendIncorrectResponse(mistakenFor: Breed.mock1.displayName)
         
         #expect(stats.confidence == .low, "Expected low confidence but got \(stats.confidence.rawValue) instead.")
     }
@@ -66,7 +66,7 @@ struct BreedStatsTests {
         stats.appendCorrectResponse()
         
         // Break the streak
-        stats.incorrectResponse()
+        stats.appendIncorrectResponse(mistakenFor: Breed.mock1.displayName)
         
         // Accuracy 6/7
         #expect(stats.confidence == .high, "Expected high confidence but got \(stats.confidence.rawValue) instead.")
@@ -76,7 +76,7 @@ struct BreedStatsTests {
         let stats = BreedStats(breed: .mock1)
 
         stats.appendCorrectResponse()
-        stats.incorrectResponse()
+        stats.appendIncorrectResponse(mistakenFor: Breed.mock1.displayName)
         stats.appendCorrectResponse()
 
         // 2 correct out of 3
@@ -90,7 +90,7 @@ struct BreedStatsTests {
         let later = Date()
 
         stats.appendCorrectResponse(date: earlier)
-        stats.incorrectResponse(date: later)
+        stats.appendIncorrectResponse(mistakenFor: Breed.mock1.displayName, date: later)
         
         let mostRecentAnswerDate = try #require(stats.mostRecentAnswerDate, "Expected a non-nil most recent answer date.")
 
@@ -107,7 +107,7 @@ struct BreedStatsTests {
         stats.appendCorrectResponse()
         stats.appendCorrectResponse()
 
-        stats.incorrectResponse()
+        stats.appendIncorrectResponse(mistakenFor: Breed.mock1.displayName)
 
         stats.appendCorrectResponse() // streak of 2
         stats.appendCorrectResponse()

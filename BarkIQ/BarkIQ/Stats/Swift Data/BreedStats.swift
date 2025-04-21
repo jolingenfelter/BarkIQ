@@ -16,12 +16,15 @@ final class BreedStats {
     var streak: Int
     var streakHistory: [[Date]]
     var answerHistory: [Date: Bool]
+    var mistakes: [Date:String]
     
     convenience init(
         breed: Breed,
         streak: Int = 0,
         streakHistory: [[Date]] = [],
-        answerHistory: [Date : Bool] = [:]
+        answerHistory: [Date : Bool] = [:],
+        mistakes: [Date:String] = [:]
+        
     ) {
         self.init(
             name: breed.name,
@@ -29,7 +32,8 @@ final class BreedStats {
             displayName: breed.displayName,
             streak: streak,
             streakHistory: streakHistory,
-            answerHistory: answerHistory
+            answerHistory: answerHistory,
+            mistakes: mistakes
         )
     }
     
@@ -37,9 +41,10 @@ final class BreedStats {
         name: String,
         subType: String? = nil,
         displayName: String,
-        streak: Int,
-        streakHistory: [[Date]],
-        answerHistory: [Date : Bool]
+        streak: Int = 0,
+        streakHistory: [[Date]] = [],
+        answerHistory: [Date : Bool],
+        mistakes: [Date:String] = [:]
     ) {
         self.name = name
         self.subType = subType
@@ -47,7 +52,6 @@ final class BreedStats {
         self.streak = streak
         self.streakHistory = streakHistory
         self.answerHistory = answerHistory
+        self.mistakes = mistakes
     }
 }
-
-
