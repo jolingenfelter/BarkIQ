@@ -1,5 +1,5 @@
 //
-//  EnvironmentValues+QuizActions.swift
+//  EnvironmentValues+quizFlowActions.swift
 //  BarkIQ
 //
 //  Created by Jo Lingenfelter on 4/20/25.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-private struct QuizFlowActionsKey: EnvironmentKey {
-    static let defaultValue = QuizFlowActions(
+extension EnvironmentValues {
+    @Entry var quizFlowActions: QuizFlowActions = QuizFlowActions(
         next: {},
         recordAnswer: { _, _ in
             return nil
@@ -16,11 +16,4 @@ private struct QuizFlowActionsKey: EnvironmentKey {
         quit: {},
         restart: {}
     )
-}
-
-extension EnvironmentValues {
-    var quizActions: QuizFlowActions {
-        get { self[QuizFlowActionsKey.self] }
-        set { self[QuizFlowActionsKey.self] = newValue }
-    }
 }

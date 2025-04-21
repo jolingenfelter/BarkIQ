@@ -47,7 +47,7 @@ struct QuizFlow: View {
         _quizController = State(wrappedValue: QuizController(apiClient: apiClient))
     }
     
-    private var quizActions: QuizFlowActions {
+    private var quizFlowActions: QuizFlowActions {
         QuizFlowActions(
             next: quizController.next,
             recordAnswer: { question, selected in
@@ -101,7 +101,7 @@ struct QuizFlow: View {
                 }
                 .interactiveDismissDisabled(disablesSwipeDown)
         }
-        .environment(\.quizActions, quizActions)
+        .environment(\.quizFlowActions, quizFlowActions)
     }
 }
 

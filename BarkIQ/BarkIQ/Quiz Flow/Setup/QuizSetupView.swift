@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct QuizSetupView: View {
-    @Environment(\.quizActions)
-    private var quizActions
+    @Environment(\.quizFlowActions)
+    private var quizFlowActions
     
     @State private var isShowingQuestion: Bool = false
     @State private var error: AlertModel?
@@ -28,7 +28,7 @@ struct QuizSetupView: View {
                 .pickerStyle(.menu)
             } footer: {
                 LoadingButton("Start Quiz!") {
-                    await quizActions.next()
+                    await quizFlowActions.next()
                 }
                 .buttonStyle(.primary)
                 .padding(.top, 28)
@@ -39,7 +39,7 @@ struct QuizSetupView: View {
     
     private func errorAlert(_ error: Error) -> AlertModel {
         let okAction = AlertModel.Action.ok {
-            quizActions.quit()
+            quizFlowActions.quit()
         }
         
         let alert = AlertModel(

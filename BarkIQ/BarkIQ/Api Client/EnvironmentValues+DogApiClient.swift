@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-private struct DogApiClientKey: EnvironmentKey {
-    static let defaultValue: DogApiClient = .live
-}
-
 extension EnvironmentValues {
-    var dogApiClient: DogApiClient {
-        get { self[DogApiClientKey.self] }
-        set { self[DogApiClientKey.self] = newValue }
-    }
+    @Entry var dogApiClient: DogApiClient = .live
 }

@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-private struct ImageDataLoaderKey: EnvironmentKey {
-    static let defaultValue: ImageDataLoader = .live
-}
-
 extension EnvironmentValues {
-    var imageDataLoader: ImageDataLoader {
-        get { self[ImageDataLoaderKey.self] }
-        set { self[ImageDataLoaderKey.self] = newValue }
-    }
+    @Entry var imageDataLoader: ImageDataLoader = .live
 }

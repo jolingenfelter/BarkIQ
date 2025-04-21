@@ -12,10 +12,10 @@ struct ResultsView: View {
     @Environment(\.modelContext)
     private var modelContext
     
-    @Environment(\.quizActions.restart)
+    @Environment(\.quizFlowActions.restart)
     private var restart
     
-    @Environment(\.quizActions.quit)
+    @Environment(\.quizFlowActions.quit)
     private var quit
     
     @ScaledMetric(relativeTo: .largeTitle)

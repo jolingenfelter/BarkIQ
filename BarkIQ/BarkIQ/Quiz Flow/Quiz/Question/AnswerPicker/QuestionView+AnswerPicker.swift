@@ -14,8 +14,8 @@ extension QuestionView {
     /// the selected wrong answer (if any) is shown in red, and the rest stay neutral.
     /// All buttons are disabled after an answer is picked.
     struct AnswerPicker: View {
-        @Environment(\.quizActions)
-        private var quizActions
+        @Environment(\.quizFlowActions)
+        private var quizFlowActions
         
         @Binding
         var questionStage: QuestionStage
@@ -30,7 +30,7 @@ extension QuestionView {
                         question: question,
                         questionStage: questionStage,
                         action: {
-                            guard let result = quizActions.recordAnswer(question, choice) else { return }
+                            guard let result = quizFlowActions.recordAnswer(question, choice) else { return }
                             questionStage = .showAnswer(result)
                         }
                     )

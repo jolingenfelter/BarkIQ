@@ -22,8 +22,8 @@ struct QuestionView: View {
         case nextButton
     }
     
-    @Environment(\.quizActions)
-    private var quizActions
+    @Environment(\.quizFlowActions)
+    private var quizFlowActions
     
     @ScaledMetric(relativeTo: .largeTitle)
     private var questionTextSpacing: CGFloat = 24
@@ -113,7 +113,7 @@ struct QuestionView: View {
                             
                             if showNextButton {
                                 LoadingButton(nextButtonText) {
-                                    await quizActions.next()
+                                    await quizFlowActions.next()
                                 }
                                 .buttonStyle(.primary)
                                 .transition(.slide)
@@ -174,8 +174,8 @@ struct QuestionView: View {
     private var exitButton: some View {
         switch mode {
         case .review:
-            Button("Done") {
-                quizActions.quit()
+            Button("Close") {
+                quizFlowActions.quit()
             }
         case .play:
             Button("Quit") {
@@ -188,7 +188,7 @@ struct QuestionView: View {
         let action = ConfirmationDialogModel.Action(
             "Quit now",
             role: .destructive,
-            action: quizActions.quit
+            action: quizFlowActions.quit
         )
         
         let model = ConfirmationDialogModel(
