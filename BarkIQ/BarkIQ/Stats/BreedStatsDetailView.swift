@@ -71,13 +71,15 @@ struct BreedStatsDetailView: View {
                         content: lastInCorrectDate.formatted(date: .abbreviated, time: .shortened))
                 }
                 
-                NavigationLink {
-                    MistakesListView(
-                        breedName: stats.displayName,
-                        mistakesHistory: stats.mistakes
-                    )
-                } label: {
-                    row(title: "Mistaken for", content: nil)
+                if !stats.mistakes.isEmpty {
+                    NavigationLink {
+                        MistakesListView(
+                            breedName: stats.displayName,
+                            mistakesHistory: stats.mistakes
+                        )
+                    } label: {
+                        row(title: "Mistaken for", content: nil)
+                    }
                 }
             }
         }
