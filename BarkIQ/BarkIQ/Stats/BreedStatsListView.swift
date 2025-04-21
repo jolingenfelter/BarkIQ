@@ -12,19 +12,38 @@ struct BreedStatsListView: View {
     @Query(sort: [SortDescriptor(\BreedStats.name)]) var stats: [BreedStats]
     
     var body: some View {
-        List(stats, id: \.name) { stat in
-            NavigationLink {
-                BreedStatsDetailView(stats: stat)
-            } label: {
-                HStack {
-                    Text(stat.displayName)
-                    Spacer(minLength: 8)
-                    ConfidenceIndicator(level: stat.confidence)
+        Group {
+            if stats.isEmpty {
+                emptyState()
+            } else {
+                List(stats, id: \.name) { stat in
+                    NavigationLink {
+                        BreedStatsDetailView(stats: stat)
+                    } label: {
+                        HStack {
+                            Text(stat.displayName)
+                            Spacer(minLength: 8)
+                            ConfidenceIndicator(level: stat.confidence)
+                        }
+                    }
                 }
             }
         }
         .navigationTitle("Stats by breed")
         .navigationBarTitleDisplayMode(.large)
+    }
+    
+    private func emptyState() -> some View {
+        ScrollingContentView { geometry in
+            Text("Take a quiz and then come here to see your stats!")
+                .frame(
+                    maxWidth: geometry.size.width,
+                    minHeight: geometry.size.height
+                )
+                .padding(.horizontal, 40)
+                .scenePadding()
+        }
+        .background(Color(UIColor.systemGroupedBackground))
     }
 }
 
