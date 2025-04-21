@@ -17,4 +17,6 @@ extension Logger {
     static let quizController = Logger(subsystem: systemIdentifier, category: "QuizController")
     
     static let imageLoading = Logger(subsystem: systemIdentifier, category: "ImageLoading")
+    
+    static let persistence = Logger(subsystem: systemIdentifier, category: "Persistence")
 }

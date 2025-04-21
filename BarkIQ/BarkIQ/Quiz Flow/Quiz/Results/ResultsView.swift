@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import OSLog
 
 struct ResultsView: View {
     @Environment(\.modelContext)
@@ -67,7 +68,7 @@ struct ResultsView: View {
                 }
             } footer: {
                 LoadingButton("Take another quiz!") {
-                   restart?()
+                    restart?()
                 }
                 .buttonStyle(.primary)
                 .padding(.top, 28)
@@ -90,21 +91,36 @@ struct ResultsView: View {
     }
     
     private func persistStats(from results: [QuestionResult], in context: ModelContext) {
+        Logger.persistence.info("📊 Beginning breed stats update...")
+        
         for result in results {
             let breedName = result.question.answer.name
-
-            let descriptor = FetchDescriptor<BreedStats>(predicate: #Predicate { $0.name == breedName })
-
-            if let existing = try? context.fetch(descriptor).first {
-                existing.update(for: result)
-            } else {
-                let newStats = BreedStats(breed: result.question.answer)
-                newStats.update(for: result)
-                context.insert(newStats)
+            
+            let descriptor = FetchDescriptor<BreedStats>(
+                predicate: #Predicate { $0.name == breedName }
+            )
+            
+            do {
+                if let existing = try context.fetch(descriptor).first {
+                    Logger.persistence.info("🔄 Updating stats for breed: \(existing.displayName)")
+                    existing.update(for: result)
+                } else {
+                    Logger.persistence.info("🆕 Inserting stats for breed: \(result.question.answer.displayName)")
+                    let newStats = BreedStats(breed: result.question.answer)
+                    newStats.update(for: result)
+                    context.insert(newStats)
+                }
+            } catch {
+                Logger.persistence.error("❌ Error fetching stats for breed '\(breedName)':\n\(error)")
             }
         }
 
-        try? context.save()
+        do {
+            try context.save()
+            Logger.persistence.info("💾 Successfully saved updated stats.")
+        } catch {
+            Logger.persistence.error("❌ Error saving context:\n\(error)")
+        }
     }
 }
 
