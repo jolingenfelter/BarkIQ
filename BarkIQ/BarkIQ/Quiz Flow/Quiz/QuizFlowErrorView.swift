@@ -25,6 +25,7 @@ struct QuizFlowErrorView: View {
                 minHeight: geometry.size.height
             )
             .scenePadding()
+            .accessibilityElement(children: .combine)
         }
     }
 }

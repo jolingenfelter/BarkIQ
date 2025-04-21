@@ -11,6 +11,7 @@ struct DefaultImagePlaceholder: View {
     var body: some View {
         VStack {
             Image(systemName: "dog")
+                .accessibilityHidden(true)
             ProgressView()
         }
         .frame(
@@ -18,6 +19,7 @@ struct DefaultImagePlaceholder: View {
             maxHeight: .infinity
         )
         .background(Color.gray.opacity(0.3))
+        .accessibilityElement(children: .combine)
     }
 }
 

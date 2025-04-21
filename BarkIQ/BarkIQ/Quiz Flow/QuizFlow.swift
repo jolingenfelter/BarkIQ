@@ -96,6 +96,7 @@ struct QuizFlow: View {
                             error: error,
                             retryAction: quizController.next
                         )
+                        .navigationBarBackButtonHidden()
                     }
                 }
                 .interactiveDismissDisabled(disablesSwipeDown)

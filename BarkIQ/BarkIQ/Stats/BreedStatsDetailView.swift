@@ -23,6 +23,8 @@ struct BreedStatsDetailView: View {
                     ConfidenceIndicator(level: stats.confidence)
                 }
                 .padding(.vertical, verticalPadding)
+                .accessibilityElement()
+                .accessibilityLabel("Confidence - \(stats.confidence.rawValue). \(axConfidenceAdendum(for: stats))")
 
                 row(
                     title: "Reps",
@@ -105,6 +107,18 @@ struct BreedStatsDetailView: View {
             }
         }
         .padding(.vertical, verticalPadding)
+        .accessibilityElement(children: .combine)
+    }
+    
+    private func axConfidenceAdendum(for stats: BreedStats) -> String {
+        switch stats.confidence {
+        case .high:
+            return "You usually get this one right."
+        case .medium:
+            return "You get this one right sometimes, but you haven't mastered it yet."
+        case .low:
+            return "You need to practice more to get this one right."
+        }
     }
 }
 

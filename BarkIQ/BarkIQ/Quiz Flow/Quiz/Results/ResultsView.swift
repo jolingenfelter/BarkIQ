@@ -27,8 +27,11 @@ struct ResultsView: View {
         self.results = results
     }
     
-    var scoreText: String {
-        let correctCount = results.filter(\.isCorrect).count
+    private var correctCount: Int {
+        results.filter(\.isCorrect).count
+    }
+    
+    private var scoreText: String {
         let total = results.count
         
         return "\(correctCount)/\(total)"
@@ -44,6 +47,7 @@ struct ResultsView: View {
                 Text(" correct!")
             }
             .padding(.vertical, verticalPadding)
+            .accessibilityLabel("You got \(correctCount) of \(results.count) correct!")
             
             Section {
                 ForEach(results, id: \.self) { result in
@@ -56,6 +60,8 @@ struct ResultsView: View {
                             ConfidenceIndicator(bool: result.isCorrect)
                         }
                         .padding(.vertical, verticalPadding)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("\(result.question.answer.displayName) – \(result.isCorrect ? "Correct" : "Incorrect")")
                     }
                 }
             } footer: {

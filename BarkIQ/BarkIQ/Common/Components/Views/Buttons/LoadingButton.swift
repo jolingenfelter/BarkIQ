@@ -55,6 +55,7 @@ struct LoadingButton<Label: View>: View {
         }
         .disabled(isLoading)
         .animation(.default, value: isLoading)
+        .accessibilityElement(children: .combine)
     }
 }
 

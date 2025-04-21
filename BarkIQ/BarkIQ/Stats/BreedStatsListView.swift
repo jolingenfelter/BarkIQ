@@ -29,6 +29,7 @@ struct BreedStatsListView: View {
                             ConfidenceIndicator(level: stat.confidence)
                         }
                         .padding(.vertical, verticalPadding)
+                        .accessibilityElement(children: .combine)
                     }
                 }
             }

@@ -32,6 +32,7 @@ struct MistakesListView: View {
                             }
                         }
                         .padding(.vertical, verticalPadding)
+                        .accessibilityElement(children: .combine)
                     }
                 }
             }

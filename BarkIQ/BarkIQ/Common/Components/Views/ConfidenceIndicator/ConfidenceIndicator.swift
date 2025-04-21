@@ -22,6 +22,7 @@ struct ConfidenceIndicator: View {
         Circle()
             .foregroundStyle(level.colorValue)
             .frame(width: 10, height: 10)
+            .accessibilityElement()
     }
 }
 

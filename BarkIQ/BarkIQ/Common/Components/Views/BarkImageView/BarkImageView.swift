@@ -70,6 +70,7 @@ struct BarkImageView<Placeholder: View>: View {
             switch phase {
             case .loading:
                 placeholder()
+                    .accessibilityLabel("Loading image")
             case .loaded(let image):
                 image
                     .resizable()

@@ -156,10 +156,18 @@ struct QuestionView: View {
             }
             .background(backgroundColor)
             .navigationBarBackButtonHidden(mode == .play)
-            .navigationTitle(titleText)
+            .navigationTitle(Text(titleText).accessibilityLabel(navBarAxLabel))
             .navigationBarTitleDisplayMode(.inline)
-            //.navigationBarTitleDisplayMode(.large)
             .confirmationDialog($confirmationAlert)
+        }
+    }
+    
+    private var navBarAxLabel: String {
+        switch mode {
+        case .review:
+            "Question number \(question.location.questionNumber)"
+        case .play:
+            "Question \(question.location.questionNumber) of \(question.location.totalCount)"
         }
     }
     

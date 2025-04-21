@@ -25,10 +25,24 @@ extension QuestionView {
             return .none
         }
         
+        var accessibilityLabel: String {
+            if questionStage == .ask {
+                return choice.displayName
+            } else if case .showAnswer(let result) = questionStage {
+                if choice == question.answer {
+                    return "\(choice.displayName), correct answer"
+                } else if choice == result.selectedAnswer {
+                    return "\(choice.displayName), your answer, incorrect"
+                }
+            }
+            return choice.displayName
+        }
+        
         var body: some View {
             Button(choice.displayName, action: action)
                 .buttonStyle(.quiz(highlight))
                 .disabled(questionStage != .ask)
+                .accessibilityLabel(accessibilityLabel)
         }
     }
 }

@@ -14,8 +14,10 @@ struct RetryButton: View {
         LoadingButton(action: retryAction) {
             HStack {
                 Image(systemName: "arrow.clockwise")
+                    .accessibilityHidden(true)
                 Text("Retry")
             }
+            .accessibilityElement(children: .combine)
         }
     }
 }
