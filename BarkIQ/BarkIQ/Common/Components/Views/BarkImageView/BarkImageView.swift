@@ -71,13 +71,16 @@ struct BarkImageView<Placeholder: View>: View {
             case .loading:
                 placeholder()
                     .accessibilityLabel("Loading image")
+                    .cornerRadius(cornerRadius)
             case .loaded(let image):
                 image
                     .resizable()
                     .scaledToFit()
+                    .cornerRadius(cornerRadius)
             case .error(let error):
                 VStack(spacing: retrySpacing) {
                     Text("Error loading image: \(error)")
+                        .padding(.horizontal, 20)
                     RetryButton {
                         await fetchImage()
                     }
@@ -90,7 +93,6 @@ struct BarkImageView<Placeholder: View>: View {
                 removal: .opacity
             )
         )
-        .cornerRadius(cornerRadius)
         .task {
             await fetchImage()
         }
