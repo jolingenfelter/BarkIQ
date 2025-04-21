@@ -18,6 +18,9 @@ struct ResultsView: View {
     @Environment(\.quizActions.quit)
     private var quit
     
+    @ScaledMetric(relativeTo: .largeTitle)
+    private var verticalPadding = 8.0
+    
     let results: [QuestionResult]
     
     init(results: [QuestionResult]) {
@@ -32,10 +35,15 @@ struct ResultsView: View {
     }
     
     var body: some View {
+        // I was having trouble getting the fotter of a list to do
+        // what I wanted it to do here, so I used a Form instead
         Form {
-            Text("You got ") +
-            Text(scoreText).bold() +
-            Text(" correct!")
+            Group {
+                Text("You got ") +
+                Text(scoreText).bold() +
+                Text(" correct!")
+            }
+            .padding(.vertical, verticalPadding)
             
             Section {
                 ForEach(results, id: \.self) { result in
@@ -47,6 +55,7 @@ struct ResultsView: View {
                             Spacer()
                             ConfidenceIndicator(bool: result.isCorrect)
                         }
+                        .padding(.vertical, verticalPadding)
                     }
                 }
             } footer: {
@@ -69,6 +78,7 @@ struct ResultsView: View {
         }
         .navigationTitle("Score")
         .navigationBarBackButtonHidden()
+        .navigationBarTitleDisplayMode(.large)
     }
     
     private func updateStats(_ stats: BreedStats, for result: QuestionResult) {
