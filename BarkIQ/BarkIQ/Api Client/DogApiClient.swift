@@ -11,17 +11,6 @@ import OSLog
 // Constructed so that it can be inserted into the environment
 // and easily replaced with a mock.
 struct DogApiClient {
-    enum Error: Swift.Error {
-        /// Indicates the URL could not be constructed (usually due to a malformed breed).
-        case invalidURL
-        
-        /// Indicates a successful HTTP request returned an error from the API (e.g., bad breed name).
-        case responseError(String)
-        
-        /// A catch-all for any other unexpected failure.
-        case unknown(String)
-    }
-    
     var fetchBreeds: () async throws -> [Breed]
     var fetchImageUrl: (_ for: Breed) async throws -> URL
     
@@ -65,16 +54,36 @@ private enum DogApiLive {
         let breeds = BreedsResponseParser.parseBreeds(breedsData)
         
         #if DEBUG
-        Logger.networking.debug("🐾 Parsed breeds:\n\(breeds.map(\.description).joined(separator: "\n"))")
+        Logger.networking.debug("🐾 Parsed breeds:\n\(breeds.map(\.displayName).joined(separator: "\n"))")
         #endif
         
         return breeds
     }
     
+    private static func parseApiResponse<T: Codable>(_ data: Data, from url: URL) throws -> T {
+        Logger.networking.info("📥 Attempting to parse API response of type \(T.self) from url: \(url.absoluteString)")
+        
+        do {
+            let response = try JSONDecoder().decode(DogApiResponseType<T>.self, from: data)
+            
+            switch response {
+            case .success(let success):
+                Logger.networking.info("✅ Successfully parsed response with type \(T.self) from url: \(url.absoluteString)")
+                return success.message
+            case .error(let failure):
+                Logger.networking.error("❌ Parsed error response from url: \(url.absoluteString):\n\(failure.description)")
+                throw DogApiClient.Error.responseError("The request failed: \(failure.message)")
+            }
+        } catch {
+            Logger.networking.error("❌ Failed trying to parse \(T.self)")
+            throw DogApiClient.Error.parsingError(error.localizedDescription)
+        }
+    }
+    
     private static func fetchData<T: Codable>(from url: URL) async throws -> T {
         var request = URLRequest(url: url)
         request.timeoutInterval = 10.0
-
+        
         // This API was frequently throwing errors related to QUIC.
         // Using an ephemeral session fixes this.
         let session = URLSession(configuration: .ephemeral)
@@ -83,23 +92,15 @@ private enum DogApiLive {
             Logger.networking.info("🐾 Starting request to url: \(url.absoluteString)")
             
             let (data, _) = try await session.data(for: request)
-            let response = try JSONDecoder().decode(DogApiResponseType<T>.self, from: data)
-       
             Logger.networking.info("📦 Received response from url: \(url.absoluteString)")
             
-            switch response {
-            case .success(let success):
-                Logger.networking.info("✅ Successful fetch from url: \(url.absoluteString)")
-                return success.message
-            case .error(let failure):
-                // The API has returned a response, but it had an `error` status
-                // or parsing failed
-                Logger.networking.error("❌ Received an error response from url: \(url):\n\(failure.description)")
-                throw DogApiClient.Error.responseError("The request failed: \(failure.message)")
-            }
+            return try parseApiResponse(data, from: url)
+        } catch let error as DogApiClient.Error {
+            throw error // Already DogApiClient.Error so just throw it
         } catch {
+            // An uknown error type that likely comes from the server
             Logger.networking.error("❌ Exception while fetching from url: \(url) with error: \(error.localizedDescription)")
-            throw error
+            throw DogApiClient.Error.unknown(error)
         }
     }
 }

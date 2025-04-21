@@ -70,12 +70,12 @@ final class QuizController {
         self.currentQuestionNumber = 1
         self.results.removeAll()
         self.currentState = .initial
-        Logger.quizController.info("Reset quiz controller")
+        Logger.quizController.info("🧼 Reset quiz controller")
     }
     
     func next() async {
        guard currentQuestionNumber <= settings.questionCount else {
-           Logger.quizController.info("Quiz complete with \(self.results.count) results")
+           Logger.quizController.info("✅ Quiz complete with \(self.results.count) results")
            self.currentState = .results(results)
            return
         }
@@ -88,13 +88,13 @@ final class QuizController {
             let question = try await generateQuestion()
             
             self.currentState = .question(question)
-            Logger.quizController.info("Update state to .question: \(String(describing: question), privacy: .public)")
+            Logger.quizController.info("➡️ Next question:\n\(String(describing: question), privacy: .public)")
             
             // Only increment the question number after a succesful
             // fetch has been made
             currentQuestionNumber += 1
         } catch {
-            Logger.quizController.error("Error generating question: \(error.localizedDescription)")
+            Logger.quizController.error("❌ Error generating question: \(error.localizedDescription)")
             self.currentState = .error(error.localizedDescription)
         }
     }
@@ -103,12 +103,13 @@ final class QuizController {
     func checkAnswer(for question: Question, selected: Breed) -> QuestionResult {
         let result = QuestionResult(question: question, selectedAnswer: selected)
         results.append(result)
-        Logger.quizController.info("Appended \(result) to results")
+        Logger.quizController.info("📈 Appended to quiz results:\n\(result)")
         return result
     }
     
     private func generateQuestion() async throws -> Question {
         guard let answer = settings.breeds.randomElement() else {
+            Logger.quizController.error("❌ Failed to get random breed for question")
             throw Error.failedToGenerateQuestion
         }
 
@@ -120,6 +121,7 @@ final class QuizController {
         let otherBreeds = settings.breeds.filter { $0 != answer }.shuffled()
 
         guard otherBreeds.count >= numberOfChoices - 1 else {
+            Logger.quizController.error("❌ Failed to generate question: not enough distractors")
             throw Error.failedToGenerateQuestion
         }
 
