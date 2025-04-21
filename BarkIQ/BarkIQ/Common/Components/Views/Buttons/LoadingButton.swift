@@ -14,10 +14,8 @@ import SwiftUI
 ///
 /// ### Example
 /// ```swift
-/// LoadingButton(action: {
+/// LoadingButton("Submit") {
 ///     await viewModel.submitForm()
-/// }) {
-///     Text("Submit")
 /// }
 /// .buttonStyle(.primary)
 /// ```

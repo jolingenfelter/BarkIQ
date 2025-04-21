@@ -105,7 +105,8 @@ extension ButtonStyle where Self == BarkIQButtonStyle {
     ///
     /// - Parameter highlight: A behavior that controls visual feedback when showing an answer.
     ///   Use `.none` to disable feedback, or `.hilightable(.positive)` / `.hilightable(.negative)`
-    ///   for correct/incorrect styling.
+    ///   for correct/incorrect styling. The intention is for the button to be disabled when
+    ///   hilight != .none.
     static func quiz(_ highlight: HighlightBehavior = .none) -> Self {
         BarkIQButtonStyle(
             color: .barkSecondary,

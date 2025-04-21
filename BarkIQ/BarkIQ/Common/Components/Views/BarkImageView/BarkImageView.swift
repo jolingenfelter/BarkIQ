@@ -137,5 +137,6 @@ extension BarkImageView where Placeholder == DefaultImagePlaceholder {
 
 #Preview {
     BarkImageView(url: Bundle.main.url(forResource: "jacopo", withExtension: "jpg")!)
+        .frame(width: 300, height: 200)
         .environment(\.imageDataLoader, ImageDataLoader.mock)
 }

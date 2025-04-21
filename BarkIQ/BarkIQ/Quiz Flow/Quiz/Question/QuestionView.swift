@@ -209,4 +209,5 @@ struct QuestionView: View {
 
 #Preview {
     QuestionView(question: .mock())
+        .environment(\.quizFlowActions, .mock)
 }
