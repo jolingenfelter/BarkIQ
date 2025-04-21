@@ -157,7 +157,8 @@ struct QuestionView: View {
             .background(backgroundColor)
             .navigationBarBackButtonHidden(mode == .play)
             .navigationTitle(titleText)
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
+            //.navigationBarTitleDisplayMode(.large)
             .confirmationDialog($confirmationAlert)
         }
     }

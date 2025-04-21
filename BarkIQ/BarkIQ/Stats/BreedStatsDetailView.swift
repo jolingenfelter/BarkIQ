@@ -9,6 +9,9 @@ import SwiftUI
 import SwiftData
 
 struct BreedStatsDetailView: View {
+    @ScaledMetric(relativeTo: .largeTitle)
+    private var verticalPadding = 8.0
+    
     let stats: BreedStats
 
     var body: some View {
@@ -19,6 +22,7 @@ struct BreedStatsDetailView: View {
                     Spacer()
                     ConfidenceIndicator(level: stats.confidence)
                 }
+                .padding(.vertical, verticalPadding)
 
                 row(
                     title: "Reps",
@@ -66,19 +70,32 @@ struct BreedStatsDetailView: View {
                 }
             }
         }
-        .navigationTitle("\(stats.displayName) Stats")
+        .navigationTitle("\(stats.displayName)")
     }
 
     @ViewBuilder
     private func row(title: String, content: String?) -> some View {
-        HStack {
-            Text(title)
-            Spacer()
+        ViewThatFits {
+            HStack {
+                Text(title)
+                Spacer()
 
-            if let content {
-                Text(content)
+                if let content {
+                    Text(content)
+                        .frame(alignment: .trailing)
+                }
+            }
+            
+            VStack(alignment: .leading) {
+                Text(title)
+                Spacer()
+
+                if let content {
+                    Text(content)
+                }
             }
         }
+        .padding(.vertical, verticalPadding)
     }
 }
 

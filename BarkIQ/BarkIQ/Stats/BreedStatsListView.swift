@@ -11,6 +11,9 @@ import SwiftData
 struct BreedStatsListView: View {
     @Query(sort: [SortDescriptor(\BreedStats.displayName)]) var stats: [BreedStats]
     
+    @ScaledMetric(relativeTo: .largeTitle)
+    private var verticalPadding = 8.0
+    
     var body: some View {
         Group {
             if stats.isEmpty {
@@ -25,6 +28,7 @@ struct BreedStatsListView: View {
                             Spacer(minLength: 8)
                             ConfidenceIndicator(level: stat.confidence)
                         }
+                        .padding(.vertical, verticalPadding)
                     }
                 }
             }
