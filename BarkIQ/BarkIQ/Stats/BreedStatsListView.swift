@@ -8,6 +8,10 @@
 import SwiftUI
 import SwiftData
 
+/// Shows an alphabitized list of breeds that have `BreedStats` associated with them.
+/// Note that stats are only stored if/when a particular breed has been see in a quiz.
+/// Each breed in the list has a `ConfidenceIndicator` with it to  provide quick
+/// visual signal of how well the user knows that breed, based on their quiz history.
 struct BreedStatsListView: View {
     @Query(sort: [SortDescriptor(\BreedStats.displayName)]) var stats: [BreedStats]
     

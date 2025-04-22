@@ -5,7 +5,8 @@
 //  Created by Jo Lingenfelter on 4/13/25.
 //
 
-/// Represents a dog breed, optionally including a subtype (e.g., "Wheaten Terrier").
+/// Represents a dog breed, optionally including a subtype (e.g.,  in "Wheaten Terrier"
+/// where "Terrier" is the name and "Wheaten" is the subtype).
 ///
 /// Note: The source API contains some inconsistencies. For certain breeds like
 /// "Australian Shepherd", the `name` and `subType` values may be reversed,

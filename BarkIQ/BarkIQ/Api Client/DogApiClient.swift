@@ -8,8 +8,10 @@
 import Foundation
 import OSLog
 
-// Constructed so that it can be inserted into the environment
-// and easily replaced with a mock.
+/// Used to fetch dog breed data and images from the Dog CEO API.
+/// Constructed so that it can be inserted into the environment and easily replaced
+/// with a mock for testing or previews. All operations are asynchronous and throw
+/// on failure.
 struct DogApiClient {
     var fetchBreeds: () async throws -> [Breed]
     var fetchImageUrl: (_ for: Breed) async throws -> URL

@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// Shows a list of the breeds that a particular breed has been mistaken
+/// for in quizzes grouped by the date of those mistakes
 struct MistakesListView: View {
     @ScaledMetric(relativeTo: .largeTitle)
     private var verticalPadding = 8

@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+/// The root view of the modal flow that contains a quiz.  This view
+/// owns the `QuizController`, which maintains the state
+/// of the quiz and directs progress through the entire flow.
 struct QuizFlow: View {
     private enum Stage: Hashable, Equatable {
         case quiz(Question)
@@ -23,6 +26,9 @@ struct QuizFlow: View {
     @State
     private var quizController: QuizController
     
+    // Disable swipe down during the quiz, where
+    // a confirmation dialog is shown to confirm
+    // before quitting.
     private var disablesSwipeDown: Bool {
         if let top = navigationPath.last {
             if case .quiz = top {

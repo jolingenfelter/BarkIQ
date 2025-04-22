@@ -8,6 +8,13 @@
 import SwiftUI
 
 extension QuestionView {
+    /// A button intended for use in `QuestionView.AnswerPicker`.
+    /// It accepts a binding to a `QuizView.QuestionStage` and handles
+    /// updating the highlight state to indicate whether or not the `Breed`
+    /// displayed in the button's label is correct.  This button calls the
+    /// `recordAnswer` action from the `QuizFlowActions` in the
+    /// environment to pass the user's selection back to the `QuizController`
+    /// in `QuizFlow`.
     struct ChoiceButton: View {
         @Environment(\.quizFlowActions.recordAnswer)
         private var recordAnswer

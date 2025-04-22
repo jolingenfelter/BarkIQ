@@ -19,12 +19,10 @@ import SwiftUI
 /// is kept private to prevent accidental UI coupling.
 ///
 /// The controller handles:
-/// - Fetching and caching breeds (if needed)
+/// - Fetching breeds
 /// - Generating randomized multiple-choice questions
 /// - Tracking which answers were selected
 /// - Returning a final results summary at the end
-///
-/// It’s designed to produce and advance quiz state, not hold onto long-term identity or deep view model logic.
 @Observable
 final class QuizController {
 

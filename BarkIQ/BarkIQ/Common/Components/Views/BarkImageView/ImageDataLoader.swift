@@ -8,8 +8,6 @@
 import SwiftUI
 import OSLog
 
-/// A lightweight dependency that defines how image data should be fetched for a given URL.
-///
 /// `ImageDataLoader` allows clients to inject different image loading strategies,
 /// making it easy to customize behavior for production, testing, and previews.
 struct ImageDataLoader {

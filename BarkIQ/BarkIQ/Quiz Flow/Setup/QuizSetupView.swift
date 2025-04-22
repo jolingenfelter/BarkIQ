@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+/// The first view in the quiz flow, which allows the user to select
+/// the number of questions in their quiz. The "Start Quiz" button
+/// calls `next()` from the `QuizFlowActions` in the
+/// environment to begin the quiz.
 struct QuizSetupView: View {
     @Environment(\.quizFlowActions)
     private var quizFlowActions

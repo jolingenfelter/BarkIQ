@@ -30,7 +30,7 @@ struct BreedsResponseParser {
     /// - If the breed has no subtypes, a single `Breed` is created with just the name
     ///
     /// - Parameter data: A dictionary of breed names and their sub-breeds, typically from the `message` field
-    /// - Returns: A flat list of `Breed` instances ready for use in the app
+    /// - Returns: An array of type `Breed` 
     static func parseBreeds(_ data: Dictionary<String, [String]>) -> [Breed] {
         var breeds: [Breed] = []
         for (name, subTypes) in data {

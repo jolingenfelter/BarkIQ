@@ -11,7 +11,7 @@ import SwiftUI
 /// - `AsyncImage` uses a shared `URLSession`, which frequently fails for this API
 /// - A `.ephemeral` session is required to avoid persistent QUIC-related connection issues
 /// - This view allows full control over loading, animated transitions, and error handling
-/// - Supports custom placeholders and consistent styling across app use cases
+/// - Supports custom placeholders
 struct BarkImageView<Placeholder: View>: View {
     enum Phase: Equatable {
         case loading

@@ -8,6 +8,11 @@
 import SwiftUI
 import SwiftData
 
+/// A detail view that shows quiz performance for a specific breed.
+/// Displays streaks, answer history, and other stats from `BreedStats`.
+/// The first item in this view is the `Confidence` level for the selected
+/// breed.  See `BreedStats.confidece` for more information on how
+/// this is defined.
 struct BreedStatsDetailView: View {
     @ScaledMetric(relativeTo: .largeTitle)
     private var verticalPadding = 8.0

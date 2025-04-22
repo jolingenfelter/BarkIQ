@@ -21,7 +21,3 @@ enum HilightType: Equatable {
     }
 }
 
-enum HighlightBehavior: Equatable {
-    case none
-    case hilightable(HilightType)
-}

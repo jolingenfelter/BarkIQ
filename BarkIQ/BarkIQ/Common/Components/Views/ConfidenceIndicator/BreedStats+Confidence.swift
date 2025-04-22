@@ -12,8 +12,8 @@ extension BreedStats {
     /// with a bias toward sustained performance over time.
     ///
     /// - High confidence is returned if:
-    ///   - The current streak is 3 or more correct answers, OR
-    ///   - The user has previously had a streak of 3+ and maintains ≥ 85% accuracy overall.
+    ///   - The current streak is 5 or more correct answers, OR
+    ///   - The user has previously had a streak of 5+ and maintains ≥ 85% accuracy overall.
     ///
     /// - Medium confidence is returned if:
     ///   - The current streak is at least 1, OR

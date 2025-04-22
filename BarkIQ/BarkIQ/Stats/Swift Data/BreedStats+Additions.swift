@@ -12,6 +12,7 @@ extension BreedStats {
         return BreedStats(breed: breed)
     }
     
+    /// Add a correct response to the answer history
     func appendCorrectResponse(date: Date = .now) {
         if streak != 0 {
             // Continue the previous streak
@@ -25,7 +26,12 @@ extension BreedStats {
         answerHistory[date] = true
     }
 
-    func appendIncorrectResponse(mistakenFor breed: String, date: Date = .now) {
+    /// Add an incorrect response to the history, specifying the breed that
+    /// a particular breed was mistaken for.
+    func appendIncorrectResponse(
+        mistakenFor breed: String,
+        date: Date = .now
+    ) {
         streak = 0
         answerHistory[date] = false
         mistakes[date] = breed

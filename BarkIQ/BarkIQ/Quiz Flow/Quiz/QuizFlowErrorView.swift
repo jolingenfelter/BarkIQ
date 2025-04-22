@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+/// Used as a full-screen error in the quiz flow when the app
+/// experiences an error (such as a failed API call or loss of internet
+/// connection).  This view has a retry button that calls the `next`
+/// method in the `QuizFlowActions`, which it pulls from the
+/// environment.
 struct QuizFlowErrorView: View {
     @Environment(\.quizFlowActions)
     private var quizFlowActions

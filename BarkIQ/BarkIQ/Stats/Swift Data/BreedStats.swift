@@ -8,6 +8,9 @@
 import Foundation
 import SwiftData
 
+/// Stores quiz history and performance stats for a specific breed.
+/// Tracks how often a breed has been answered correctly or incorrectly,
+/// along with mistake history, and streaks.
 @Model
 final class BreedStats {
     var name: String

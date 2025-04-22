@@ -11,8 +11,9 @@ extension QuestionView {
     /// Visually displays the answer choices as a vertical list of buttons.
     ///
     /// Once an answer is selected, the correct one is highlighted in green,
-    /// the selected wrong answer (if any) is shown in red, and the rest stay neutral.
-    /// All buttons are disabled after an answer is picked.
+    /// the selected wrong answer (if the user has selected an incorrect answer)
+    /// is shown in red, and the rest stay neutral. All buttons are disabled after
+    /// an answer is picked.
     struct AnswerPicker: View {
         @Environment(\.quizFlowActions)
         private var quizFlowActions
