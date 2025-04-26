@@ -76,8 +76,8 @@ struct QuestionView: View {
     }
     
     private let mode: Mode
-    
-    let question: Question
+
+    private let question: Question
     
     /// Initialize a `QuestionView` in an interactive game-mode
     /// as part of a quiz.
@@ -108,6 +108,7 @@ struct QuestionView: View {
                     VStack(spacing: questionTextSpacing) {
                         Text(question.questionText)
                             .font(.system(.body, design: .monospaced).bold())
+                            .multilineTextAlignment(.center)
                         
                         VStack(spacing: 48) {
                             AnswerPicker(

@@ -93,13 +93,8 @@ struct BarkImageView<Placeholder: View>: View {
                 removal: .opacity
             )
         )
-        .task {
+        .task(id: url) {
             await fetchImage()
-        }
-        .onChange(of: url) { _ , newValue in
-            Task {
-                await fetchImage()
-            }
         }
     }
     

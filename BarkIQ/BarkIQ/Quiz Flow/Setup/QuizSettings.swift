@@ -13,7 +13,10 @@ struct QuizSettings: Hashable, Equatable {
     /// Defaults to [5, 10, 15, 20, 25].
     let countOptions = Array(stride(from: 5, through: 25, by: 5))
     
+    /// The number of questions in a quiz
     var questionCount: Int
+    
+    /// The breeds available to generage questions from
     var breeds: [Breed] = []
     
     init() {

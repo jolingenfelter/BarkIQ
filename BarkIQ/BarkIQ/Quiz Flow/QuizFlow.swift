@@ -11,9 +11,21 @@ import SwiftUI
 /// owns the `QuizController`, which maintains the state
 /// of the quiz and directs progress through the entire flow.
 struct QuizFlow: View {
+    
+    /// Represents the stage of the quiz, which
+    /// determines the kind of view to show
     private enum Stage: Hashable, Equatable {
+        /// The quiz is in progress and showing a
+        /// question in either the answered or
+        /// unanswered state
         case quiz(Question)
+        
+        /// The quiz has been completed and results
+        /// are being shown
         case results([QuestionResult])
+        
+        /// An error has occured either in fetching
+        /// data or in data manipulation
         case error(String)
     }
     
@@ -39,6 +51,13 @@ struct QuizFlow: View {
         return false
     }
     
+    // Used to check whether or not a a dismiss
+    // button should be in the nav bar.  In
+    // cases where the retry button has been
+    // pressed, and a subsequent error is
+    // returned.  This property is read to
+    // prevent pushing another error view onto
+    // the stack.
     private var isCurrentlyError: Bool {
         if let top = navigationPath.last {
             if case .error = top {
@@ -49,10 +68,18 @@ struct QuizFlow: View {
         return false
     }
     
+    // Api client can't be fetched from the
+    // environment because it wouldn't be
+    // avaialable on initialization to pass
+    // into the `QuizController`
     init(apiClient: DogApiClient) {
         _quizController = State(wrappedValue: QuizController(apiClient: apiClient))
     }
     
+    // Passed into the environment
+    // to allow subviews to handle actions
+    // from the quiz controller without
+    // having direct access to it
     private var quizFlowActions: QuizFlowActions {
         QuizFlowActions(
             next: quizController.next,

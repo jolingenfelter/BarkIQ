@@ -26,21 +26,42 @@ import SwiftUI
 @Observable
 final class QuizController {
 
+    /// Represents the current state of the quiz flow, which
+    /// is used to track and update the UI
     enum QuizState: Equatable {
+        /// A quiz question is ready to be displayed.
         case question(Question)
+        
+        /// An error occurred (e.g., during data fetch), and a message is available.
         case error(String)
+        
+        /// The quiz has finished, and results are ready to be shown.
         case results([QuestionResult])
+        
+        /// The quiz is currently loading a question (e.g., fetching data).
         case loading
+        
+        /// The quiz has not yet started.
         case initial
     }
 
+    // Exposed for reading for testing purposes
     private(set) var currentQuestionNumber: Int = 1
     
+    /// The current state of the quiz.  Should be used to
+    /// drive changes in the UI such as showing an error
+    /// screen, the results, or a new question.
     private(set) var currentState: QuizState = .initial
     
     private var results: [QuestionResult] = []
     
+    /// The settings for the quiz, which include the number
+    /// of questions and the breeds that can be used to generate
+    /// questions
     var settings = QuizSettings()
+    
+    /// The api client from which breeds and photos for questions
+    /// will be fetched
     let apiClient: DogApiClient
 
     init(apiClient: DogApiClient) {
