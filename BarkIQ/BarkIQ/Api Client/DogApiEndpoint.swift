@@ -8,7 +8,10 @@
 import Foundation
 
 enum DogApiEndpoint {
+    /// Fetch a list of all available breeds
     case breeds
+    
+    /// Fetch a random image for a specified breed
     case randomImage(_ breed: Breed)
     
     private var baseURL: String {
